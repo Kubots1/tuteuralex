@@ -445,3 +445,194 @@
   .result-card { padding: 2rem 1.2rem; }
   .quiz-topbar { gap: 0.5rem; }
 }
+/* ══════════════════════════════════════════
+   ÉDITEUR ADMIN — à ajouter à la fin de quiz.css
+══════════════════════════════════════════ */
+
+/* Carte thème admin */
+.theme-card--add {
+  background: rgba(168,85,247,0.08) !important;
+  border: 2px dashed rgba(168,85,247,0.4) !important;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.8rem;
+}
+.theme-card--add:hover {
+  border-color: rgba(168,85,247,0.8) !important;
+  background: rgba(168,85,247,0.15) !important;
+}
+.theme-edit-btn {
+  position: absolute;
+  top: 0.8rem; right: 0.8rem;
+  background: rgba(0,0,0,0.4);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.theme-card { position: relative; }
+.theme-card:hover .theme-edit-btn { opacity: 1; }
+
+/* Topbar éditeur */
+.ed-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.5rem;
+  background: rgba(13,11,43,0.97);
+  border-bottom: 1px solid rgba(168,85,247,0.2);
+  flex-wrap: wrap;
+  position: sticky;
+  top: 70px;
+  z-index: 10;
+}
+.ed-title {
+  flex: 1;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--white);
+}
+.ed-topbar-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* Corps éditeur */
+.ed-body {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Carte métadonnées */
+.ed-meta-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(168,85,247,0.2);
+  border-radius: 1.2rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.ed-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.ed-section-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-soft);
+  margin-bottom: 0.2rem;
+}
+.ed-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+.ed-input {
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(168,85,247,0.3);
+  background: rgba(13,11,43,0.6);
+  color: var(--white);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  width: 100%;
+}
+.ed-input:focus {
+  outline: none;
+  border-color: var(--purple-glow);
+}
+.ed-select {
+  cursor: pointer;
+}
+input[type="color"].ed-input {
+  padding: 0.3rem;
+  height: 42px;
+  cursor: pointer;
+}
+
+/* Questions */
+.ed-questions-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.ed-questions-header { display: flex; flex-direction: column; gap: 0.4rem; }
+.ed-hint {
+  font-size: 0.85rem;
+  color: var(--gold);
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.9rem;
+}
+
+.ed-question-block {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(168,85,247,0.15);
+  border-radius: 1rem;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  animation: fadeUp 0.2s ease both;
+}
+.ed-q-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ed-q-num {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--purple-glow);
+}
+.ed-q-del {
+  padding: 0.3rem 0.6rem !important;
+  font-size: 0.8rem !important;
+}
+.ed-answers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.ed-answer-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  margin-top: 0.3rem;
+}
+.correct-answer {
+  border-color: rgba(16,185,129,0.5) !important;
+}
+.correct-answer:focus {
+  border-color: #10b981 !important;
+}
+
+.ed-add-btn {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .ed-meta-grid { grid-template-columns: 1fr; }
+  .ed-topbar { gap: 0.5rem; }
+  .ed-topbar-actions { width: 100%; }
+}
