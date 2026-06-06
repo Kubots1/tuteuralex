@@ -1,5 +1,6 @@
 /* ============================================================
    images.js — Galerie + Éditeur + Explorer + Glisser + Quiz
+   Version Supabase Storage (sauvegarde automatique)
    ============================================================ */
 'use strict';
 
@@ -10,9 +11,7 @@ const state = {
   quiz: { order: [], index: 0, score: 0, answered: [] },
 };
 
-const dragState = {
-  placed: {}, score: 0, dragging: null,
-};
+const dragState = { placed: {}, score: 0, dragging: null };
 
 const $ = id => document.getElementById(id);
 const gallerySection = $('gallery-section');
@@ -31,9 +30,52 @@ const explorePanel   = $('explore-panel');
 const quizPanel      = $('quiz-panel');
 const dragPanel      = $('drag-panel');
 
-/* ── Init ── */
+/* ══════════════════════════════════════════
+   SUPABASE STORAGE
+══════════════════════════════════════════ */
+function getSupabase() {
+  return window.Auth?.getClient?.() || null;
+}
+
+async function uploadImageToStorage(file, name) {
+  const sb = getSupabase();
+  if (!sb) throw new Error('Supabase non disponible');
+  const ext  = file.name.split('.').pop();
+  const path = `${Date.now()}_${name}.${ext}`;
+  const { error } = await sb.storage.from('images').upload(path, file, { upsert: false });
+  if (error) throw error;
+  const { data } = sb.storage.from('images').getPublicUrl(path);
+  return { url: data.publicUrl, path };
+}
+
+async function saveImageRecord(name, src, zones, storagePath) {
+  const sb = getSupabase();
+  if (!sb) throw new Error('Supabase non disponible');
+  const { data, error } = await sb.from('images')
+    .insert({ name, src, zones, storage_path: storagePath })
+    .select().single();
+  if (error) throw error;
+  return data;
+}
+
+async function updateZones(id, zones) {
+  const sb = getSupabase();
+  if (!sb) return;
+  await sb.from('images').update({ zones }).eq('id', id);
+}
+
+async function deleteImageRecord(id, storagePath) {
+  const sb = getSupabase();
+  if (!sb) return;
+  await sb.from('images').delete().eq('id', id);
+  if (storagePath) await sb.storage.from('images').remove([storagePath]);
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
 (async function init() {
-  await loadPermanentImages();
+  await loadImagesFromSupabase();
   renderGallery();
   bindEvents();
   applyStudentMode();
@@ -54,22 +96,34 @@ function applyStudentMode() {
   hide();
 }
 
-/* ══════════════════════════════════════════
-   CHARGEMENT MANIFEST
-══════════════════════════════════════════ */
-async function loadPermanentImages() {
-  try {
-    const r = await fetch('images-manifest.json');
-    if (!r.ok) return;
-    const manifest = await r.json();
-    for (const e of manifest) {
-      let zones = [];
-      if (e.jsonFile) {
-        try { const jr = await fetch(e.jsonFile); if (jr.ok) { const jd = await jr.json(); zones = jd.zones || []; } } catch {}
-      }
-      state.images.push({ id: 'perm-' + e.name, name: e.name, src: e.src, zones, permanent: true });
-    }
-  } catch {}
+async function loadImagesFromSupabase() {
+  const sb = getSupabase();
+
+  // Attendre que Auth soit prêt
+  await new Promise(resolve => {
+    if (window.Auth?.ready) { resolve(); return; }
+    document.addEventListener('auth-ready', resolve, { once: true });
+  });
+
+  const client = window.Auth?.getClient?.();
+  if (!client) return;
+
+  const { data, error } = await client
+    .from('images')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) { console.warn('Erreur chargement images:', error.message); return; }
+
+  state.images = (data || []).map(row => ({
+    id:          row.id,
+    name:        row.name,
+    src:         row.src,
+    zones:       row.zones || [],
+    permanent:   true,
+    storagePath: row.storage_path || null,
+    dbId:        row.id
+  }));
 }
 
 /* ══════════════════════════════════════════
@@ -81,42 +135,117 @@ function renderGallery() {
   state.images.forEach(img => {
     const card = document.createElement('div');
     card.className = 'gallery-card';
+    const isAdmin = window.Auth?.isAdmin?.();
     const modeBadge = img.permanent
       ? '<div class="gallery-card-mode quiz-mode-badge">🎯 Quiz</div>'
       : '<div class="gallery-card-mode edit-mode-badge">✏️ Éditeur</div>';
+    const deleteBtn = isAdmin
+      ? `<button class="gallery-card-delete" data-id="${img.id}" title="Supprimer">🗑️</button>`
+      : '';
     card.innerHTML = `
       <img src="${img.src}" alt="${img.name}" loading="lazy" />
       <div class="gallery-card-label">${img.name}</div>
       ${img.zones.length ? `<div class="gallery-card-zones">${img.zones.length} zone${img.zones.length > 1 ? 's' : ''}</div>` : ''}
       ${modeBadge}
+      ${deleteBtn}
     `;
-    card.addEventListener('click', () => img.permanent ? openQuizSection(img.id) : openEditor(img.id));
+    card.querySelector('img').addEventListener('click', () =>
+      img.permanent ? openQuizSection(img.id) : openEditor(img.id)
+    );
+    card.querySelector('.gallery-card-label').addEventListener('click', () =>
+      img.permanent ? openQuizSection(img.id) : openEditor(img.id)
+    );
+    // Bouton éditer pour admin
+    if (isAdmin) {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'gallery-card-edit';
+      editBtn.title = 'Annoter';
+      editBtn.textContent = '✏️ Annoter';
+      editBtn.addEventListener('click', e => { e.stopPropagation(); openEditor(img.id); });
+      card.appendChild(editBtn);
+
+      card.querySelector('.gallery-card-delete')?.addEventListener('click', async e => {
+        e.stopPropagation();
+        if (!confirm(`Supprimer "${img.name}" ?`)) return;
+        await deleteImageRecord(img.id, img.storagePath);
+        state.images = state.images.filter(i => i.id !== img.id);
+        renderGallery();
+      });
+    }
     galleryGrid.insertBefore(card, addCard);
   });
 }
 
-uploadInput.addEventListener('change', e => {
-  const file = e.target.files[0]; if (!file) return;
+/* ── Upload nouvelle image ── */
+uploadInput.addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+
+  // Affiche un aperçu local immédiatement
   const reader = new FileReader();
-  reader.onload = ev => {
-    const img = { id: 'img-' + Date.now(), name: file.name.replace(/\.[^.]+$/, ''), src: ev.target.result, zones: [] };
-    state.images.unshift(img); renderGallery(); openEditor(img.id);
+  reader.onload = async ev => {
+    const name = file.name.replace(/\.[^.]+$/, '');
+    const tempImg = {
+      id: 'tmp-' + Date.now(),
+      name,
+      src: ev.target.result,
+      zones: [],
+      permanent: false,
+      _file: file,
+      _name: name
+    };
+    state.images.unshift(tempImg);
+    renderGallery();
+    openEditor(tempImg.id);
   };
-  reader.readAsDataURL(file); e.target.value = '';
+  reader.readAsDataURL(file);
 });
+
+/* ── Sauvegarde dans Supabase après annotation ── */
+async function saveCurrentToSupabase() {
+  if (!state.current || !window.Auth?.isAdmin?.()) return;
+  const btn = $('save-json-btn');
+
+  try {
+    btn.textContent = '⏳ Sauvegarde…';
+    btn.disabled = true;
+
+    if (state.current._file) {
+      // Nouvelle image : upload fichier + créer enregistrement
+      const { url, path } = await uploadImageToStorage(state.current._file, state.current._name);
+      const record = await saveImageRecord(state.current.name, url, state.current.zones, path);
+      // Remplace l'entrée temporaire par la vraie
+      const idx = state.images.findIndex(i => i.id === state.current.id);
+      const saved = { id: record.id, name: record.name, src: record.src, zones: record.zones, permanent: true, storagePath: path, dbId: record.id };
+      state.images[idx] = saved;
+      state.current = saved;
+      btn.textContent = '✅ Sauvegardé !';
+    } else {
+      // Image existante : mise à jour des zones seulement
+      await updateZones(state.current.dbId, state.current.zones);
+      btn.textContent = '✅ Zones sauvegardées !';
+    }
+
+    setTimeout(() => { btn.textContent = '💾 Sauvegarder'; btn.disabled = false; }, 2000);
+  } catch (err) {
+    console.error('Erreur sauvegarde:', err);
+    btn.textContent = '❌ Erreur';
+    btn.disabled = false;
+    alert('Erreur lors de la sauvegarde : ' + err.message);
+  }
+}
 
 /* ══════════════════════════════════════════
    ONGLETS Explorer / Glisser / Quiz
 ══════════════════════════════════════════ */
 function switchTab(tab) {
-  // Cacher tous les panneaux
   explorePanel.classList.add('hidden');
   dragPanel.classList.add('hidden');
   quizPanel.classList.add('hidden');
   $('quiz-score').classList.add('hidden');
   $('quiz-restart-btn').classList.add('hidden');
 
-  // Activer le bon onglet
   $('tab-explore').classList.toggle('active', tab === 'explore');
   $('tab-drag').classList.toggle('active',    tab === 'drag');
   $('tab-quiz').classList.toggle('active',    tab === 'quiz');
@@ -125,12 +254,10 @@ function switchTab(tab) {
     explorePanel.classList.remove('hidden');
     renderExploreSvg();
     renderExploreZoneList();
-
   } else if (tab === 'drag') {
     dragPanel.classList.remove('hidden');
     initDragMode();
     setTimeout(renderDragOverlay, 80);
-
   } else {
     quizPanel.classList.remove('hidden');
     $('quiz-score').classList.remove('hidden');
@@ -174,8 +301,8 @@ function renderExploreSvg() {
   if (ol) ol.remove();
   if (!state.current) return;
 
-  const imgRect  = quizImg.getBoundingClientRect();
-  const svgRect  = quizSvg.getBoundingClientRect();
+  const imgRect = quizImg.getBoundingClientRect();
+  const svgRect = quizSvg.getBoundingClientRect();
   const iw = quizImg.naturalWidth  || imgRect.width;
   const ih = quizImg.naturalHeight || imgRect.height;
   const sx = imgRect.width / iw, sy = imgRect.height / ih;
@@ -212,7 +339,6 @@ function renderExploreSvg() {
       g.appendChild(mkTxt(cx, cy + 5, i + 1, 11));
     }
 
-    // Hover
     g.addEventListener('mouseenter', () => {
       g.querySelectorAll('.explore-zone-rect').forEach(el => {
         el.setAttribute('fill', 'rgba(168,85,247,0.28)');
@@ -358,32 +484,14 @@ function renderDragOverlay() {
     div.appendChild(lbl);
 
     if (placed === true) {
-      div.style.background = 'rgba(16,185,129,0.2)';
-      div.style.borderColor = '#10b981';
-      div.style.borderStyle = 'solid';
+      div.style.background   = 'rgba(16,185,129,0.2)';
+      div.style.borderColor  = '#10b981';
+      div.style.borderStyle  = 'solid';
     }
 
-    // Drop events
-    div.addEventListener('dragover', e => {
-      e.preventDefault();
-      if (!dragState.placed[z.id]) {
-        div.style.background = 'rgba(168,85,247,0.25)';
-        div.style.borderColor = '#a855f7';
-        div.style.borderStyle = 'solid';
-      }
-    });
-    div.addEventListener('dragleave', () => {
-      if (!dragState.placed[z.id]) {
-        div.style.background = 'rgba(168,85,247,0.06)';
-        div.style.borderColor = 'rgba(168,85,247,0.5)';
-        div.style.borderStyle = 'dashed';
-      }
-    });
-    div.addEventListener('drop', e => {
-      e.preventDefault();
-      if (dragState.placed[z.id]) return;
-      handleDrop(z.id, e.dataTransfer.getData('text/plain'));
-    });
+    div.addEventListener('dragover',  e => { e.preventDefault(); if (!dragState.placed[z.id]) { div.style.background = 'rgba(168,85,247,0.25)'; div.style.borderColor = '#a855f7'; div.style.borderStyle = 'solid'; } });
+    div.addEventListener('dragleave', () => { if (!dragState.placed[z.id]) { div.style.background = 'rgba(168,85,247,0.06)'; div.style.borderColor = 'rgba(168,85,247,0.5)'; div.style.borderStyle = 'dashed'; } });
+    div.addEventListener('drop', e => { e.preventDefault(); if (dragState.placed[z.id]) return; handleDrop(z.id, e.dataTransfer.getData('text/plain')); });
 
     overlay.appendChild(div);
   });
@@ -402,33 +510,21 @@ function handleDrop(targetId, chipId) {
     renderDragOverlay();
     if (dragState.score >= state.current.zones.length) showDragWin();
   } else {
-    // Flash rouge sur la zone
     const dropDiv = document.querySelector(`#drag-overlay [data-zone-id="${targetId}"]`);
     if (dropDiv) {
-      dropDiv.style.background   = 'rgba(239,68,68,0.25)';
-      dropDiv.style.borderColor  = '#ef4444';
-      dropDiv.style.borderStyle  = 'solid';
-      setTimeout(() => {
-        dropDiv.style.background  = 'rgba(168,85,247,0.06)';
-        dropDiv.style.borderColor = 'rgba(168,85,247,0.5)';
-        dropDiv.style.borderStyle = 'dashed';
-      }, 500);
+      dropDiv.style.background  = 'rgba(239,68,68,0.25)';
+      dropDiv.style.borderColor = '#ef4444';
+      dropDiv.style.borderStyle = 'solid';
+      setTimeout(() => { dropDiv.style.background = 'rgba(168,85,247,0.06)'; dropDiv.style.borderColor = 'rgba(168,85,247,0.5)'; dropDiv.style.borderStyle = 'dashed'; }, 500);
     }
-    // Faire trembler le chip
     const chip = $('drag-word-bank').querySelector(`[data-zone-id="${chipId}"]`);
-    if (chip) {
-      chip.classList.add('placed-wrong');
-      setTimeout(() => chip.classList.remove('placed-wrong'), 500);
-    }
+    if (chip) { chip.classList.add('placed-wrong'); setTimeout(() => chip.classList.remove('placed-wrong'), 500); }
   }
 }
 
 function syncChipStates() {
   $('drag-word-bank').querySelectorAll('.drag-chip').forEach(chip => {
-    if (dragState.placed[chip.dataset.zoneId] === true) {
-      chip.classList.add('placed-ok');
-      chip.draggable = false;
-    }
+    if (dragState.placed[chip.dataset.zoneId] === true) { chip.classList.add('placed-ok'); chip.draggable = false; }
   });
 }
 
@@ -440,15 +536,8 @@ function showDragWin() {
   const msg = $('drag-result-msg');
   msg.textContent = '🏆 Bravo ! Tu as placé tous les mots correctement !';
   msg.className = 'drag-result-msg success';
-
   if (window.Progress && state.current) {
-    Progress.save({
-      type: 'image_drag',
-      ref: state.current.name,
-      label: `🧩 ${state.current.name}`,
-      score: state.current.zones.length,
-      total: state.current.zones.length
-    });
+    Progress.save({ type: 'image_drag', ref: state.current.name, label: `🧩 ${state.current.name}`, score: state.current.zones.length, total: state.current.zones.length });
   }
 }
 
@@ -481,9 +570,7 @@ function onTouchEnd(e) {
   const t = e.changedTouches[0];
   const el = document.elementFromPoint(t.clientX, t.clientY);
   const dt = el && el.closest('.drop-target');
-  if (dt && touchChip && !dragState.placed[dt.dataset.zoneId]) {
-    handleDrop(dt.dataset.zoneId, touchChip.dataset.zoneId);
-  }
+  if (dt && touchChip && !dragState.placed[dt.dataset.zoneId]) handleDrop(dt.dataset.zoneId, touchChip.dataset.zoneId);
   touchChip = null;
 }
 
@@ -545,11 +632,10 @@ function renderQuizSvg(activeIdx) {
     else               { fill = 'rgba(168,85,247,0.1)';  stroke = 'rgba(168,85,247,0.4)'; }
     const numColor = isActive ? '#f59e0b' : answered ? (answered.correct ? '#10b981' : '#ef4444') : '#7c3aed';
 
-    const mk = (tag, attrs) => { const el = document.createElementNS('http://www.w3.org/2000/svg', tag); Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v)); return el; };
+    const mk = (tag, attrs) => { const el = document.createElementNS('http://www.w3.org/2000/svg', tag); Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v)); return el; };
     const mkTxt = (x, y, txt, size, anchor) => { const t = mk('text', { x, y, 'text-anchor': anchor||'middle', fill:'white', 'font-size':size, 'font-weight':'bold', 'font-family':'Nunito,sans-serif', 'pointer-events':'none' }); t.textContent = txt; return t; };
 
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
     if (z.type === 'rect') {
       const rx = px(z.x), ry = py(z.y), rw = pw(z.w), rh = ph(z.h);
       const rect = mk('rect', { x: rx, y: ry, width: rw, height: rh, rx: 4, fill, stroke, 'stroke-width': isActive ? 3 : 1.5 });
@@ -591,7 +677,7 @@ function checkAnswer() {
       <span class="tooltip-badge ${zone.nombre === 'invariable' ? 'badge-invariable' : 'badge-variable'}">${zone.nombre}</span>
       <span class="tooltip-badge badge-${zone.cat}">${zone.cat}</span>
     </div>
-    ${zone.desc    ? `<div class="quiz-zone-desc">${zone.desc}</div>` : ''}
+    ${zone.desc    ? `<div class="quiz-zone-desc">${zone.desc}</div>`       : ''}
     ${zone.example ? `<div class="quiz-zone-example">« ${zone.example} »</div>` : ''}
   `;
   $('quiz-zone-info').classList.remove('hidden');
@@ -612,15 +698,8 @@ function showQuizResult() {
   $('quiz-result').classList.remove('hidden');
   $('quiz-question-block').classList.add('hidden');
   renderQuizSvg(-1);
-
   if (window.Progress && state.current) {
-    Progress.save({
-      type: 'image_quiz',
-      ref: state.current.name,
-      label: `🎯 ${state.current.name}`,
-      score: q.score,
-      total
-    });
+    Progress.save({ type: 'image_quiz', ref: state.current.name, label: `🎯 ${state.current.name}`, score: q.score, total });
   }
 }
 
@@ -635,18 +714,28 @@ function restartQuiz() {
    MODE ÉDITEUR
 ══════════════════════════════════════════ */
 function openEditor(id) {
-  state.current = state.images.find(i => i.id === id); if (!state.current) return;
+  state.current = state.images.find(i => i.id === id);
+  if (!state.current) return;
   $('editor-image-name').textContent = state.current.name;
   editorImg.src = state.current.src;
-  gallerySection.classList.add('hidden'); editorSection.classList.remove('hidden');
+  gallerySection.classList.add('hidden');
+  editorSection.classList.remove('hidden');
+  // Change le bouton selon si c'est une nouvelle image ou existante
+  const saveBtn = $('save-json-btn');
+  saveBtn.textContent = state.current._file ? '☁️ Publier sur le site' : '💾 Sauvegarder';
   editorImg.onload = renderAllZones;
   if (editorImg.complete) renderAllZones();
 }
 
-function closeEditor() { editorSection.classList.add('hidden'); gallerySection.classList.remove('hidden'); renderGallery(); }
+function closeEditor() {
+  editorSection.classList.add('hidden');
+  gallerySection.classList.remove('hidden');
+  renderGallery();
+}
 
 function renderAllZones() {
-  svg.innerHTML = ''; if (!state.current) return;
+  svg.innerHTML = '';
+  if (!state.current) return;
   state.current.zones.forEach(z => renderZone(z));
   renderZoneList();
 }
@@ -785,12 +874,8 @@ function moveTooltip(e) {
 }
 function hideTooltip() { tooltip.classList.add('hidden'); }
 
-$('save-json-btn').addEventListener('click', () => {
-  if (!state.current) return;
-  const blob = new Blob([JSON.stringify({ name: state.current.name, zones: state.current.zones }, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob), a = document.createElement('a');
-  a.href = url; a.download = state.current.name + '.json'; a.click(); URL.revokeObjectURL(url);
-});
+/* ── Bouton Sauvegarder / Publier ── */
+$('save-json-btn').addEventListener('click', saveCurrentToSupabase);
 
 /* ══════════════════════════════════════════
    BIND EVENTS
@@ -833,7 +918,6 @@ function setTool(t) {
   svg.style.cursor = t === 'rect' ? 'crosshair' : 'cell';
 }
 
-/* ── Shuffle ── */
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
