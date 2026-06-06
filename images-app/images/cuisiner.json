@@ -1,0 +1,47 @@
+{
+  "name": "cuisiner",
+  "zones": [
+    {
+      "id": "z-1779855889265",
+      "type": "click",
+      "x": 64.35361216730038,
+      "y": 35.10593220338983,
+      "w": 0,
+      "h": 0,
+      "word": "fille",
+      "desc": "",
+      "example": "une fille",
+      "genre": "féminin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1779855908514",
+      "type": "click",
+      "x": 24.809885931558938,
+      "y": 36.97033898305085,
+      "w": 0,
+      "h": 0,
+      "word": "garçon",
+      "desc": "",
+      "example": "un garçon",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1779855919530",
+      "type": "click",
+      "x": 47.81368821292776,
+      "y": 72.73305084745762,
+      "w": 0,
+      "h": 0,
+      "word": "chocolat",
+      "desc": "",
+      "example": "du chocolat",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    }
+  ]
+}

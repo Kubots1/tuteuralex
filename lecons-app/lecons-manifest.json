@@ -1,0 +1,13 @@
+[
+  { "fichier": "01-salutations.js" },
+  { "fichier": "02-articles.js"    },
+  { "fichier": "03-chiffres.js"    },
+  
+  { "fichier": "04-present-indicatif.js" },
+  { "fichier": "05-imparfait.js"    },
+  { "fichier": "06-futur-simple.js"    },
+  
+  { "fichier": "07-futur-proche.js" },
+  { "fichier": "08-passe-compose.js"    }
+  
+]

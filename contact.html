@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact – Apprendre le Français</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">🏠 Accueil</a></li>
+      <li><a href="lecons-app/lecons.html">📖 Leçons</a></li>
+      <li><a href="quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="images-app/images.html">🖼️ Images</a></li>
+      <li><a href="contact.html" class="active">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <!-- =====================================================
+       ZONE CONTACT — Remplace ce bloc par ton formulaire !
+       ===================================================== -->
+  <main class="blank-page" id="contact-app">
+    <div class="page-icon">✉️</div>
+    <span class="construction-badge">🚧 En construction</span>
+    <h1>Contact</h1>
+    <p>Tu pourras bientôt nous écrire depuis cette page.<br>À très vite !</p>
+    <a href="index.html" class="back-btn">← Retour à l'accueil</a>
+  </main>
+  <!-- =====================================================
+       FIN ZONE CONTACT
+       ===================================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="main.js"></script>
+  <!-- <script src="contact.js"></script> -->
+</body>
+</html>

@@ -1,0 +1,89 @@
+{
+  "name": "salon",
+  "zones": [
+    {
+      "id": "z-1779853307642",
+      "type": "rect",
+      "x": 52.666666666666664,
+      "y": 49.828125,
+      "w": 13.750000000000007,
+      "h": 12.749999999999993,
+      "word": "télévision",
+      "desc": "",
+      "example": "la télévision est grande",
+      "genre": "féminin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1779853327769",
+      "type": "click",
+      "x": 39.33333333333333,
+      "y": 59.203125,
+      "w": 0,
+      "h": 0,
+      "word": "table",
+      "desc": "",
+      "example": "",
+      "genre": "féminin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1779853333922",
+      "type": "click",
+      "x": 35.583333333333336,
+      "y": 63.07812499999999,
+      "w": 0,
+      "h": 0,
+      "word": "chaise",
+      "desc": "",
+      "example": "",
+      "genre": "féminin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1779853340250",
+      "type": "click",
+      "x": 27.416666666666668,
+      "y": 87.203125,
+      "w": 0,
+      "h": 0,
+      "word": "canapé",
+      "desc": "",
+      "example": "",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1779853347417",
+      "type": "click",
+      "x": 44.583333333333336,
+      "y": 78.828125,
+      "w": 0,
+      "h": 0,
+      "word": "table basse",
+      "desc": "",
+      "example": "",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1779853354361",
+      "type": "click",
+      "x": 78.75,
+      "y": 62.70312500000001,
+      "w": 0,
+      "h": 0,
+      "word": "escaliers",
+      "desc": "",
+      "example": "",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    }
+  ]
+}

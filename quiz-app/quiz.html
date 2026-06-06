@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz – Apprendre le Français</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="quiz.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="../index.html">🏠 Accueil</a></li>
+      <li><a href="../lecons.html">📖 Leçons</a></li>
+      <li><a href="quiz.html" class="active">❓ Quiz</a></li>
+      <li><a href="../images-app/images.html">🖼️ Images</a></li>
+      <li><a href="../contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <main id="quiz-app">
+
+    <!-- ══════════════════════════════════════
+         ÉCRAN 1 — SÉLECTION THÈME
+    ══════════════════════════════════════ -->
+    <section id="screen-themes">
+      <div class="quiz-page-header">
+        <h1 class="quiz-page-title">❓ Quiz</h1>
+        <p class="quiz-page-sub">Choisis un thème pour commencer !</p>
+      </div>
+      <div id="theme-grid" class="theme-grid"></div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         ÉCRAN 2 — SÉLECTION NIVEAU
+    ══════════════════════════════════════ -->
+    <section id="screen-niveaux" class="hidden">
+      <div class="quiz-page-header">
+        <button id="back-to-themes" class="q-btn secondary">← Thèmes</button>
+        <h2 id="niveau-theme-title" class="quiz-page-title"></h2>
+        <p class="quiz-page-sub">Choisis ton niveau</p>
+      </div>
+      <div id="niveau-grid" class="niveau-grid"></div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         ÉCRAN 3 — QUIZ EN COURS
+    ══════════════════════════════════════ -->
+    <section id="screen-quiz" class="hidden">
+
+      <!-- Topbar -->
+      <div class="quiz-topbar">
+        <button id="quit-quiz" class="q-btn secondary">✕ Quitter</button>
+        <div class="quiz-meta">
+          <span id="quiz-theme-label" class="quiz-meta-theme"></span>
+          <span id="quiz-level-label" class="quiz-meta-level"></span>
+        </div>
+        <div class="quiz-hud">
+          <span id="hud-score" class="hud-score">⭐ 0</span>
+          <span id="hud-lives" class="hud-lives"></span>
+        </div>
+      </div>
+
+      <!-- Progression -->
+      <div class="quiz-progress-outer">
+        <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
+      </div>
+      <div class="quiz-progress-label">
+        <span id="quiz-q-counter">Question 1 / 20</span>
+        <span id="quiz-q-timer" class="quiz-timer"></span>
+      </div>
+
+      <!-- Carte question -->
+      <div class="quiz-card-wrap">
+        <div id="quiz-card" class="quiz-card">
+          <p id="quiz-question-text" class="quiz-question-text"></p>
+          <div id="quiz-choices" class="quiz-choices"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══════════════════════════════════════
+         ÉCRAN 4 — RÉSULTAT FINAL
+    ══════════════════════════════════════ -->
+    <section id="screen-result" class="hidden">
+      <div class="result-card">
+        <div id="result-emoji"  class="result-emoji"></div>
+        <h2 id="result-title"   class="result-title"></h2>
+        <div id="result-score"  class="result-score"></div>
+        <p id="result-msg"      class="result-msg"></p>
+        <div class="result-stars" id="result-stars"></div>
+        <div class="result-actions">
+          <button id="result-retry"   class="q-btn primary">🔄 Rejouer</button>
+          <button id="result-change"  class="q-btn secondary">📚 Autre niveau</button>
+          <button id="result-themes"  class="q-btn secondary">🏠 Thèmes</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../main.js"></script>
+  <script src="quiz-data.js"></script>
+  <script src="quiz.js"></script>
+</body>
+</html>

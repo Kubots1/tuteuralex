@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Apprendre le Français</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">🏠 Accueil</a></li>
+      <li><a href="lecons-app/lecons.html">📖 Leçons</a></li>
+      <li><a href="quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="images-app/images.html">🖼️ Images</a></li>
+      <li><a href="contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <main class="compte-page admin-page">
+    <header class="compte-header">
+      <h1>🛠️ Tableau de bord</h1>
+      <p class="compte-welcome">Vue professeur — suivi de tous les étudiants</p>
+    </header>
+
+    <div id="admin-stats" class="compte-stats"></div>
+
+    <section class="compte-section">
+      <h2>👥 Étudiants inscrits</h2>
+      <div id="admin-students" class="compte-list"><p class="compte-empty">Chargement…</p></div>
+    </section>
+
+    <section class="compte-section">
+      <h2>🕐 Dernières activités (tous étudiants)</h2>
+      <div id="admin-activity" class="compte-timeline"><p class="compte-empty">Chargement…</p></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="main.js"></script>
+  <script>
+    const TYPE_LABELS = {
+      lesson_view: '📖', lesson_exercise: '✏️', quiz: '❓',
+      image_quiz: '🎯', image_drag: '🧩'
+    };
+
+    function fmtDate(iso) {
+      return new Date(iso).toLocaleDateString('fr-FR', {
+        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    document.addEventListener('auth-ready', async () => {
+      Auth.requireAdmin();
+      if (!Auth.isAdmin()) return;
+
+      const client = Auth.getClient();
+
+      const [{ data: allProfiles, error: pErr }, { data: progress, error: gErr }] = await Promise.all([
+        client.from('profiles').select('*').order('created_at', { ascending: false }),
+        client.from('progress').select('*').order('created_at', { ascending: false }).limit(50)
+      ]);
+
+      const profiles = (allProfiles || []).filter(p => p.role === 'student');
+      const profileMap = Object.fromEntries((allProfiles || []).map(p => [p.id, p]));
+
+      if (pErr || gErr) {
+        document.getElementById('admin-stats').innerHTML =
+          `<p class="auth-msg err">Erreur : ${(pErr || gErr).message}</p>`;
+        return;
+      }
+
+      const students = profiles || [];
+      const acts = progress || [];
+
+      const actByUser = {};
+      acts.forEach(a => { actByUser[a.user_id] = (actByUser[a.user_id] || 0) + 1; });
+
+      document.getElementById('admin-stats').innerHTML = `
+        <div class="stat-card"><span class="stat-num">${students.length}</span><span class="stat-lbl">Étudiants</span></div>
+        <div class="stat-card"><span class="stat-num">${acts.length}</span><span class="stat-lbl">Activités récentes</span></div>`;
+
+      if (students.length) {
+        document.getElementById('admin-students').innerHTML = students.map(s => `
+          <div class="compte-item admin-student">
+            <span class="compte-label">${s.display_name || s.email}</span>
+            <span class="compte-meta">${s.email}</span>
+            <span class="compte-score">${actByUser[s.id] || 0} activité(s)</span>
+            <span class="compte-date">Inscrit le ${fmtDate(s.created_at)}</span>
+          </div>`).join('');
+      } else {
+        document.getElementById('admin-students').innerHTML = '<p class="compte-empty">Aucun étudiant inscrit pour l\'instant.</p>';
+      }
+
+      if (acts.length) {
+        document.getElementById('admin-activity').innerHTML = acts.map(a => {
+          const prof = profileMap[a.user_id];
+          const name = prof?.display_name || prof?.email || 'Étudiant';
+          return `<div class="timeline-item">
+            <span class="timeline-type">${TYPE_LABELS[a.type] || '•'} ${name}</span>
+            <span class="timeline-label">${a.label || a.ref}</span>
+            ${a.total ? `<span class="timeline-score">${a.score}/${a.total}</span>` : ''}
+            <span class="timeline-date">${fmtDate(a.created_at)}</span>
+          </div>`;
+        }).join('');
+      } else {
+        document.getElementById('admin-activity').innerHTML = '<p class="compte-empty">Aucune activité enregistrée.</p>';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+[
+  {
+    "name"     : "Cuisiner",
+    "src"      : "images/cuisiner.jpg",
+    "jsonFile" : "images/cuisiner.json"
+  },
+  {
+    "name"     : "Le salon",
+    "src"      : "images/salon.jpg",
+    "jsonFile" : "images/salon.json"
+  },
+  {
+    "name"     : "Maison",
+    "src"      : "images/maison.png",
+    "jsonFile" : "images/Maison.json"
+  },
+  {
+    "name"     : "Cuisine",
+    "src"      : "images/Cuisine.png",
+    "jsonFile" : "images/Cuisine.json"
+  },
+  {
+    "name"     : "Quotidien maison",
+    "src"      : "images/quotidien_maison.png",
+    "jsonFile" : "images/quotidien_maison.json"
+  }
+]

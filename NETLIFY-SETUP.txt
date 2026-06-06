@@ -1,0 +1,49 @@
+═══════════════════════════════════════════════════════════════
+  CONFIGURATION NETLIFY + SUPABASE — Apprendre le Français
+═══════════════════════════════════════════════════════════════
+
+ÉTAPE 1 — Créer un projet Supabase (gratuit)
+─────────────────────────────────────────────
+1. Allez sur https://supabase.com et créez un compte
+2. Créez un nouveau projet
+3. Ouvrez SQL Editor → collez tout le contenu de supabase/schema.sql → Run
+4. Allez dans Authentication → Providers → Email : activez, désactivez
+   "Confirm email" si vous voulez une inscription immédiate sans confirmation
+
+ÉTAPE 2 — Remplir js/config.js
+─────────────────────────────────────────────
+Dashboard Supabase → Settings → API :
+  - Project URL  → url dans js/config.js
+  - anon public  → anonKey dans js/config.js
+
+ÉTAPE 3 — Variables d'environnement Netlify
+─────────────────────────────────────────────
+Site settings → Environment variables → Add :
+
+  SUPABASE_URL              = (même URL que config.js)
+  SUPABASE_ANON_KEY         = (même clé anon)
+  SUPABASE_SERVICE_ROLE_KEY = (clé service_role — SECRÈTE, jamais dans le JS)
+  ADMIN_EMAILS              = votre@email.fr
+
+  (Plusieurs admins : email1@x.fr,email2@x.fr)
+
+ÉTAPE 4 — Déployer sur Netlify
+─────────────────────────────────────────────
+1. Glissez le dossier du site sur app.netlify.com
+   OU connectez un dépôt Git
+2. Build command : (vide) ou npm install
+3. Publish directory : .
+4. HTTPS est automatique ✓
+
+ÉTAPE 5 — Devenir admin
+─────────────────────────────────────────────
+1. Inscrivez-vous sur votre site avec l'e-mail indiqué dans ADMIN_EMAILS
+2. Reconnectez-vous → vous verrez « Admin » dans le menu
+3. L'éditeur d'images et l'upload restent accessibles pour vous uniquement
+
+ÉTUDIANTS
+─────────────────────────────────────────────
+- Inscription libre sur /login.html
+- Progression enregistrée si connecté (leçons, quiz, images)
+- Récap sur /compte.html
+- Pas d'accès à l'éditeur d'images

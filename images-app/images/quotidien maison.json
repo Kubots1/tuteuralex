@@ -1,0 +1,103 @@
+{
+  "name": "quotidien maison",
+  "zones": [
+    {
+      "id": "z-1780639336815",
+      "type": "click",
+      "x": 19.845416479876906,
+      "y": 15.904637106941683,
+      "w": 0,
+      "h": 0,
+      "word": "Ranger",
+      "desc": "",
+      "example": "La femme range le linge",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "verbe"
+    },
+    {
+      "id": "z-1780639392199",
+      "type": "click",
+      "x": 53.048114916716514,
+      "y": 15.414761228365363,
+      "w": 0,
+      "h": 0,
+      "word": "Nettoyer",
+      "desc": "",
+      "example": "l'homme nettoie la salle de bains",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "verbe"
+    },
+    {
+      "id": "z-1780639411134",
+      "type": "click",
+      "x": 75.80012794392793,
+      "y": 15.5780531878908,
+      "w": 0,
+      "h": 0,
+      "word": "Faire la lessive",
+      "desc": "",
+      "example": "la femme fait la lessive",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1780639431622",
+      "type": "click",
+      "x": 39.98475815468126,
+      "y": 55.58458327162378,
+      "w": 0,
+      "h": 0,
+      "word": "Passer l'aspirateur",
+      "desc": "",
+      "example": "l'homme passe l'aspirateur",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1780639470022",
+      "type": "click",
+      "x": 63.172216407293845,
+      "y": 55.42129131209834,
+      "w": 0,
+      "h": 0,
+      "word": "se détendre",
+      "desc": "",
+      "example": "la femme lit un livre pour se détendre",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1780639489774",
+      "type": "click",
+      "x": 22.131503913233075,
+      "y": 78.60874956471092,
+      "w": 0,
+      "h": 0,
+      "word": "Arroser les plantes",
+      "desc": "",
+      "example": "la femme arrose les plantes",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    },
+    {
+      "id": "z-1780639514086",
+      "type": "click",
+      "x": 77.97735407093379,
+      "y": 81.7112967956943,
+      "w": 0,
+      "h": 0,
+      "word": "préparer ses affaires",
+      "desc": "",
+      "example": "l'homme prépare ses affaires pour aller à l'école",
+      "genre": "masculin",
+      "nombre": "variable",
+      "cat": "nom"
+    }
+  ]
+}

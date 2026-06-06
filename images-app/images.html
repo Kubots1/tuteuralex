@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Images – Apprendre le Français</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="images.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="../index.html">🏠 Accueil</a></li>
+      <li><a href="../lecons-app/lecons.html">📖 Leçons</a></li>
+      <li><a href="../quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="images.html" class="active">🖼️ Images</a></li>
+      <li><a href="../contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <main id="images-app">
+
+    <!-- ═══════════════════════════════════════
+         GALERIE
+    ═══════════════════════════════════════ -->
+    <section id="gallery-section">
+      <div class="img-page-header">
+        <h1 class="img-page-title">🖼️ Images</h1>
+        <p class="img-page-sub">Clique sur une image pour apprendre le vocabulaire ou l'annoter !</p>
+      </div>
+      <div id="gallery-grid">
+        <label class="gallery-add-card" title="Ajouter une image">
+          <input type="file" id="upload-input" accept="image/*" hidden />
+          <span class="add-icon">＋</span>
+          <span>Ajouter une image</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         MODE QUIZ / EXPLORER
+    ═══════════════════════════════════════ -->
+    <section id="quiz-section" class="hidden">
+
+      <div class="quiz-topbar">
+        <button id="quiz-back-btn" class="editor-btn secondary">← Galerie</button>
+        <span id="quiz-image-name" class="editor-imgname"></span>
+        <div class="quiz-topbar-right">
+          <!-- Onglets -->
+          <div class="mode-tabs">
+            <button id="tab-explore" class="mode-tab active">🔍 Explorer</button>
+            <button id="tab-drag"    class="mode-tab">🧩 Glisser</button>
+            <button id="tab-quiz"    class="mode-tab">🎯 Quiz</button>
+          </div>
+          <span id="quiz-score" class="quiz-score-badge hidden">⭐ 0</span>
+          <button id="quiz-restart-btn" class="editor-btn secondary hidden">🔄 Recommencer</button>
+        </div>
+      </div>
+
+      <div class="quiz-body">
+        <div id="quiz-canvas-wrapper">
+          <img id="quiz-img" src="" alt="" draggable="false" />
+          <svg id="quiz-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+
+        <!-- Panneau Explorer -->
+        <aside id="explore-panel">
+          <h3 class="panel-title">🔍 Mode Explorer</h3>
+          <p class="explore-hint">Passe la souris sur les zones de l'image pour découvrir les mots !</p>
+          <div id="explore-info" class="explore-info hidden">
+            <div class="explore-word"></div>
+            <div class="tooltip-badges explore-badges"></div>
+            <div class="explore-desc"></div>
+            <div class="explore-example"></div>
+          </div>
+          <ul id="explore-zone-list" class="explore-zone-list"></ul>
+        </aside>
+
+        <!-- Panneau Glisser -->
+        <aside id="drag-panel">
+          <h3 class="panel-title">🧩 Glisser les mots</h3>
+          <p class="drag-hint">Fais glisser chaque mot sur la bonne zone !</p>
+          <div class="drag-score-row">
+            <span id="drag-score-txt" class="drag-score-txt">0 / 0</span>
+            <button id="drag-reset-btn" class="editor-btn secondary">🔄 Reset</button>
+          </div>
+          <div id="drag-word-bank" class="drag-word-bank"></div>
+          <div id="drag-result-msg" class="drag-result-msg hidden"></div>
+        </aside>
+
+        <!-- Panneau Quiz -->
+        <aside id="quiz-panel" class="hidden">
+          <div class="quiz-progress-wrap">
+            <div class="quiz-progress-track">
+              <div id="quiz-progress-bar" class="quiz-progress-fill"></div>
+            </div>
+            <span id="quiz-progress-text" class="quiz-progress-text">Question 1 / ?</span>
+          </div>
+          <div id="quiz-question-block">
+            <p id="quiz-question" class="quiz-question-label"></p>
+            <div class="quiz-input-row">
+              <input id="quiz-input" class="quiz-input" type="text" placeholder="Écris ta réponse…" autocomplete="off" />
+              <button id="quiz-check-btn" class="editor-btn primary">✔</button>
+            </div>
+            <div id="quiz-feedback" class="quiz-feedback"></div>
+            <div id="quiz-zone-info" class="quiz-zone-info hidden"></div>
+            <div class="quiz-actions-row">
+              <button id="quiz-hint-btn" class="editor-btn secondary">💡 Indice</button>
+              <button id="quiz-next-btn" class="editor-btn primary hidden">Suivant →</button>
+            </div>
+            <div id="quiz-hint" class="quiz-hint hidden"></div>
+          </div>
+          <div id="quiz-result" class="quiz-result hidden">
+            <div id="quiz-result-emoji" class="quiz-result-emoji"></div>
+            <div id="quiz-result-score" class="quiz-result-score"></div>
+            <div id="quiz-result-msg"   class="quiz-result-msg"></div>
+            <button id="quiz-restart-btn2" class="editor-btn primary" style="margin-top:1.2rem">🔄 Recommencer</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         MODE ÉDITEUR
+    ═══════════════════════════════════════ -->
+    <section id="editor-section" class="hidden">
+      <div class="editor-topbar">
+        <button id="back-to-gallery" class="editor-btn secondary">← Galerie</button>
+        <span id="editor-image-name" class="editor-imgname"></span>
+        <div class="editor-topbar-right">
+          <button id="tool-rect"    class="editor-btn tool active">⬜ Rectangle</button>
+          <button id="tool-click"   class="editor-btn tool">🖱️ Clic</button>
+          <button id="save-json-btn" class="editor-btn primary">💾 Télécharger JSON</button>
+        </div>
+      </div>
+      <div class="editor-body">
+        <div id="canvas-wrapper">
+          <img id="editor-img" src="" alt="" draggable="false" />
+          <svg id="annotation-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <aside id="editor-panel">
+          <h3 class="panel-title">Zones annotées</h3>
+          <ul id="zone-list"></ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         MODAL ANNOTATION (éditeur)
+    ═══════════════════════════════════════ -->
+    <div id="annotation-modal" class="modal-overlay hidden">
+      <div class="modal-box">
+        <h2 class="modal-title">✏️ Annoter la zone</h2>
+        <label>Mot / expression
+          <input type="text" id="ann-word" placeholder="ex : une table" />
+        </label>
+        <label>Définition / description
+          <textarea id="ann-desc" rows="3" placeholder="ex : meuble sur lequel on pose des objets"></textarea>
+        </label>
+        <div class="modal-badges-row">
+          <div class="badge-group">
+            <span class="badge-label">Genre</span>
+            <div class="badge-toggle-group" id="badge-genre">
+              <button class="badge-opt active" data-val="masculin">Masculin</button>
+              <button class="badge-opt" data-val="féminin">Féminin</button>
+              <button class="badge-opt" data-val="—">Neutre</button>
+            </div>
+          </div>
+          <div class="badge-group">
+            <span class="badge-label">Nombre</span>
+            <div class="badge-toggle-group" id="badge-nombre">
+              <button class="badge-opt active" data-val="variable">Variable</button>
+              <button class="badge-opt" data-val="invariable">Invariable</button>
+            </div>
+          </div>
+          <div class="badge-group">
+            <span class="badge-label">Catégorie</span>
+            <div class="badge-toggle-group" id="badge-cat">
+              <button class="badge-opt active" data-val="nom">Nom</button>
+              <button class="badge-opt" data-val="verbe">Verbe</button>
+              <button class="badge-opt" data-val="adjectif">Adjectif</button>
+              <button class="badge-opt" data-val="autre">Autre</button>
+            </div>
+          </div>
+        </div>
+        <label>Exemple de phrase
+          <input type="text" id="ann-example" placeholder="ex : La table est en bois." />
+        </label>
+        <div class="modal-actions">
+          <button id="modal-cancel" class="editor-btn secondary">Annuler</button>
+          <button id="modal-save"   class="editor-btn primary">✅ Enregistrer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tooltip survol (éditeur) -->
+    <div id="hover-tooltip" class="hover-tooltip hidden">
+      <div class="tooltip-word"></div>
+      <div class="tooltip-badges"></div>
+      <div class="tooltip-desc"></div>
+      <div class="tooltip-example"></div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../main.js"></script>
+  <script src="images.js"></script>
+</body>
+</html>

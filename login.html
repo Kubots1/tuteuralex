@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion – Apprendre le Français</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">🏠 Accueil</a></li>
+      <li><a href="lecons-app/lecons.html">📖 Leçons</a></li>
+      <li><a href="quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="images-app/images.html">🖼️ Images</a></li>
+      <li><a href="contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <main class="auth-page">
+    <div class="auth-card">
+      <div class="auth-icon">🔑</div>
+      <h1>Connexion</h1>
+      <p class="auth-sub">Crée un compte gratuit pour suivre ta progression sur le site.</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Se connecter</button>
+        <button class="auth-tab" data-tab="signup">S'inscrire</button>
+      </div>
+
+      <form id="form-login" class="auth-form">
+        <label>E-mail
+          <input type="email" id="login-email" required autocomplete="email" placeholder="ton@email.com" />
+        </label>
+        <label>Mot de passe
+          <input type="password" id="login-password" required autocomplete="current-password" placeholder="••••••••" />
+        </label>
+        <button type="submit" class="auth-btn primary">Se connecter</button>
+      </form>
+
+      <form id="form-signup" class="auth-form hidden">
+        <label>Prénom ou pseudo
+          <input type="text" id="signup-name" autocomplete="name" placeholder="Marie" />
+        </label>
+        <label>E-mail
+          <input type="email" id="signup-email" required autocomplete="email" placeholder="ton@email.com" />
+        </label>
+        <label>Mot de passe (6 caractères min.)
+          <input type="password" id="signup-password" required minlength="6" autocomplete="new-password" placeholder="••••••••" />
+        </label>
+        <button type="submit" class="auth-btn primary">Créer mon compte</button>
+      </form>
+
+      <p id="auth-msg" class="auth-msg hidden"></p>
+      <a href="index.html" class="auth-back">← Retour à l'accueil</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="main.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const redirect = params.get('redirect') || 'index.html';
+
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const isLogin = tab.dataset.tab === 'login';
+        document.getElementById('form-login').classList.toggle('hidden', !isLogin);
+        document.getElementById('form-signup').classList.toggle('hidden', isLogin);
+        hideMsg();
+      });
+    });
+
+    function showMsg(text, ok) {
+      const el = document.getElementById('auth-msg');
+      el.textContent = text;
+      el.className = 'auth-msg ' + (ok ? 'ok' : 'err');
+      el.classList.remove('hidden');
+    }
+    function hideMsg() { document.getElementById('auth-msg').classList.add('hidden'); }
+
+    document.addEventListener('auth-ready', () => {
+      if (Auth.isLoggedIn()) location.href = redirect;
+    });
+
+    document.getElementById('form-login').addEventListener('submit', async e => {
+      e.preventDefault();
+      hideMsg();
+      try {
+        await Auth.signIn(
+          document.getElementById('login-email').value.trim(),
+          document.getElementById('login-password').value
+        );
+        location.href = redirect;
+      } catch (err) {
+        showMsg(err.message || 'Erreur de connexion', false);
+      }
+    });
+
+    document.getElementById('form-signup').addEventListener('submit', async e => {
+      e.preventDefault();
+      hideMsg();
+      try {
+        const data = await Auth.signUp(
+          document.getElementById('signup-email').value.trim(),
+          document.getElementById('signup-password').value,
+          document.getElementById('signup-name').value.trim()
+        );
+        if (data.session) {
+          location.href = redirect;
+        } else {
+          showMsg('Compte créé ! Vérifie ton e-mail si la confirmation est activée, puis connecte-toi.', true);
+        }
+      } catch (err) {
+        showMsg(err.message || 'Erreur d\'inscription', false);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon profil – Apprendre le Français</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">🏠 Accueil</a></li>
+      <li><a href="lecons-app/lecons.html">📖 Leçons</a></li>
+      <li><a href="quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="images-app/images.html">🖼️ Images</a></li>
+      <li><a href="contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <main class="compte-page">
+    <header class="compte-header">
+      <h1>👤 Mon profil</h1>
+      <p id="compte-welcome" class="compte-welcome"></p>
+    </header>
+
+    <div id="compte-stats" class="compte-stats"></div>
+
+    <section class="compte-section">
+      <h2>📚 Leçons consultées</h2>
+      <div id="list-lessons" class="compte-list"><p class="compte-empty">Aucune leçon pour l'instant.</p></div>
+    </section>
+
+    <section class="compte-section">
+      <h2>✏️ Exercices de leçons</h2>
+      <div id="list-exercises" class="compte-list"><p class="compte-empty">Aucun exercice terminé.</p></div>
+    </section>
+
+    <section class="compte-section">
+      <h2>❓ Quiz</h2>
+      <div id="list-quiz" class="compte-list"><p class="compte-empty">Aucun quiz terminé.</p></div>
+    </section>
+
+    <section class="compte-section">
+      <h2>🖼️ Images / vocabulaire</h2>
+      <div id="list-images" class="compte-list"><p class="compte-empty">Aucune activité image.</p></div>
+    </section>
+
+    <section class="compte-section">
+      <h2>🕐 Activité récente</h2>
+      <div id="list-recent" class="compte-timeline"><p class="compte-empty">Connecte-toi et commence à apprendre !</p></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="main.js"></script>
+  <script>
+    const TYPE_LABELS = {
+      lesson_view:     '📖 Leçon consultée',
+      lesson_exercise: '✏️ Exercice leçon',
+      quiz:            '❓ Quiz',
+      image_quiz:      '🎯 Quiz image',
+      image_drag:      '🧩 Glisser-déposer'
+    };
+
+    function fmtDate(iso) {
+      return new Date(iso).toLocaleDateString('fr-FR', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    function bestByRef(items) {
+      const map = {};
+      items.forEach(item => {
+        const key = item.ref;
+        if (!map[key] || (item.percent ?? 0) > (map[key].percent ?? 0)) map[key] = item;
+      });
+      return Object.values(map).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+
+    function renderList(containerId, items, showScore) {
+      const el = document.getElementById(containerId);
+      if (!items.length) return;
+      el.innerHTML = items.map(item => {
+        const score = showScore && item.total
+          ? `<span class="compte-score">${item.score}/${item.total} (${item.percent}%)</span>`
+          : `<span class="compte-date">${fmtDate(item.created_at)}</span>`;
+        return `<div class="compte-item"><span class="compte-label">${item.label || item.ref}</span>${score}</div>`;
+      }).join('');
+    }
+
+    async function loadProgress() {
+      Auth.requireLogin('/compte.html');
+
+      document.addEventListener('auth-ready', async () => {
+        if (!Auth.isLoggedIn()) return;
+
+        const user = Auth.getUser();
+        document.getElementById('compte-welcome').textContent =
+          `Bonjour ${user.display_name || user.email} ! Voici ton récapitulatif.`;
+
+        const { data, error } = await Auth.getClient()
+          .from('progress')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          document.getElementById('compte-stats').innerHTML =
+            `<p class="auth-msg err">Impossible de charger la progression : ${error.message}</p>`;
+          return;
+        }
+
+        const rows = data || [];
+        const lessons   = bestByRef(rows.filter(r => r.type === 'lesson_view'));
+        const exercises = bestByRef(rows.filter(r => r.type === 'lesson_exercise'));
+        const quizzes   = bestByRef(rows.filter(r => r.type === 'quiz'));
+        const images    = bestByRef(rows.filter(r => r.type === 'image_quiz' || r.type === 'image_drag'));
+
+        document.getElementById('compte-stats').innerHTML = `
+          <div class="stat-card"><span class="stat-num">${lessons.length}</span><span class="stat-lbl">Leçons</span></div>
+          <div class="stat-card"><span class="stat-num">${exercises.length}</span><span class="stat-lbl">Exercices</span></div>
+          <div class="stat-card"><span class="stat-num">${quizzes.length}</span><span class="stat-lbl">Quiz</span></div>
+          <div class="stat-card"><span class="stat-num">${images.length}</span><span class="stat-lbl">Images</span></div>
+          <div class="stat-card"><span class="stat-num">${rows.length}</span><span class="stat-lbl">Activités</span></div>`;
+
+        renderList('list-lessons', lessons, false);
+        renderList('list-exercises', exercises, true);
+        renderList('list-quiz', quizzes, true);
+        renderList('list-images', images, true);
+
+        const recent = rows.slice(0, 20);
+        if (recent.length) {
+          document.getElementById('list-recent').innerHTML = recent.map(r => `
+            <div class="timeline-item">
+              <span class="timeline-type">${TYPE_LABELS[r.type] || r.type}</span>
+              <span class="timeline-label">${r.label || r.ref}</span>
+              ${r.total ? `<span class="timeline-score">${r.score}/${r.total}</span>` : ''}
+              <span class="timeline-date">${fmtDate(r.created_at)}</span>
+            </div>`).join('');
+        }
+      });
+    }
+
+    loadProgress();
+  </script>
+</body>
+</html>

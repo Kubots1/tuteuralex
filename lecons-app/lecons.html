@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leçons – Apprendre le Français</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="lecons.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="../index.html">🏠 Accueil</a></li>
+      <li><a href="lecons.html" class="active">📖 Leçons</a></li>
+      <li><a href="../quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="../images-app/images.html">🖼️ Images</a></li>
+      <li><a href="../contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <main id="lecons-app">
+
+    <!-- ══════════════════════════════════
+         ÉCRAN 1 — LISTE DES LEÇONS
+    ══════════════════════════════════ -->
+    <section id="screen-liste">
+      <div class="lecons-header">
+        <h1 class="lecons-title">📖 Leçons</h1>
+        <p class="lecons-sub">Choisis une leçon pour commencer à apprendre !</p>
+      </div>
+
+      <!-- Filtres -->
+      <div class="filtres-wrap">
+        <div class="filtre-group">
+          <span class="filtre-label">Niveau</span>
+          <div class="filtre-pills" id="filtre-niveau">
+            <button class="filtre-pill active" data-val="tous">Tous</button>
+            <button class="filtre-pill" data-val="A0">A0</button>
+            <button class="filtre-pill" data-val="A1">A1</button>
+            <button class="filtre-pill" data-val="A2">A2</button>
+            <button class="filtre-pill" data-val="B1">B1</button>
+            <button class="filtre-pill" data-val="B2">B2</button>
+          </div>
+        </div>
+        <div class="filtre-group">
+          <span class="filtre-label">Thème</span>
+          <div class="filtre-pills" id="filtre-theme">
+            <button class="filtre-pill active" data-val="tous">Tous</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grille des leçons -->
+      <div id="lecons-grid" class="lecons-grid"></div>
+      <div id="lecons-empty" class="lecons-empty hidden">
+        Aucune leçon ne correspond à ces filtres.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════
+         ÉCRAN 2 — LEÇON OUVERTE
+    ══════════════════════════════════ -->
+    <section id="screen-lecon" class="hidden">
+
+      <div class="lecon-topbar">
+        <button id="btn-back-liste" class="lc-btn secondary">← Leçons</button>
+        <div class="lecon-meta">
+          <span id="lecon-niveau-badge" class="lecon-niveau-badge"></span>
+          <span id="lecon-theme-badge" class="lecon-theme-badge"></span>
+        </div>
+        <div class="lecon-progress-info">
+          <span id="lecon-section-label" class="lecon-section-label"></span>
+        </div>
+      </div>
+
+      <!-- Onglets de la leçon -->
+      <div class="lecon-tabs">
+        <button class="lecon-tab active" data-tab="theorie">📚 Théorie</button>
+        <button class="lecon-tab" data-tab="exercice">✏️ Exercice</button>
+        <button class="lecon-tab" data-tab="flashcards">🃏 Flashcards</button>
+      </div>
+
+      <!-- Contenu -->
+      <div id="lecon-body" class="lecon-body">
+
+        <!-- THÉORIE -->
+        <div id="tab-theorie" class="lecon-tab-content">
+          <h2 id="lecon-titre" class="lecon-titre"></h2>
+          <div id="lecon-intro" class="lecon-intro"></div>
+          <div id="lecon-sections" class="lecon-sections"></div>
+        </div>
+
+        <!-- EXERCICE QCM -->
+        <div id="tab-exercice" class="lecon-tab-content hidden">
+          <div class="exercice-header">
+            <h3 class="exercice-titre">✏️ Exercice</h3>
+            <div class="exercice-hud">
+              <span id="ex-counter" class="ex-counter"></span>
+              <span id="ex-score"   class="ex-score">⭐ 0</span>
+            </div>
+          </div>
+          <div id="ex-progress-bar-wrap" class="ex-progress-wrap">
+            <div id="ex-progress-bar" class="ex-progress-bar"></div>
+          </div>
+          <div id="ex-card" class="ex-card">
+            <p id="ex-question" class="ex-question"></p>
+            <div id="ex-choices" class="ex-choices"></div>
+            <div id="ex-feedback" class="ex-feedback"></div>
+            <div id="ex-next-wrap" class="ex-next-wrap hidden">
+              <button id="ex-next-btn" class="lc-btn primary">Suivant →</button>
+            </div>
+          </div>
+          <div id="ex-result" class="ex-result hidden">
+            <div id="ex-result-emoji" class="ex-result-emoji"></div>
+            <div id="ex-result-score" class="ex-result-score"></div>
+            <div id="ex-result-msg"   class="ex-result-msg"></div>
+            <div class="ex-result-stars" id="ex-result-stars"></div>
+            <button id="ex-retry-btn" class="lc-btn primary" style="margin-top:1rem">🔄 Recommencer</button>
+          </div>
+        </div>
+
+        <!-- FLASHCARDS -->
+        <div id="tab-flashcards" class="lecon-tab-content hidden">
+          <div class="fc-header">
+            <h3 class="fc-titre">🃏 Flashcards</h3>
+            <span id="fc-counter" class="fc-counter"></span>
+          </div>
+          <div class="fc-arena">
+            <button id="fc-prev" class="fc-nav-btn">‹</button>
+            <div id="fc-card" class="fc-card" onclick="flipCard()">
+              <div class="fc-inner" id="fc-inner">
+                <div class="fc-front" id="fc-front"></div>
+                <div class="fc-back"  id="fc-back"></div>
+              </div>
+              <div class="fc-hint">Clique pour retourner</div>
+            </div>
+            <button id="fc-next" class="fc-nav-btn">›</button>
+          </div>
+          <div class="fc-dots" id="fc-dots"></div>
+          <div class="fc-actions">
+            <button id="fc-shuffle-btn" class="lc-btn secondary">🔀 Mélanger</button>
+            <button id="fc-restart-btn" class="lc-btn secondary">🔄 Recommencer</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../main.js"></script>
+  <script src="lecons.js"></script>
+</body>
+</html>

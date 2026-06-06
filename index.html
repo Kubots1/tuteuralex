@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apprendre le Français</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">🏠 Accueil</a></li>
+      <li><a href="lecons-app/lecons.html">📖 Leçons</a></li>
+      <li><a href="quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="images-app/images.html">🖼️ Images</a></li>
+      <li><a href="contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="stars"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Bienvenue&nbsp;!</h1>
+      <p class="hero-sub">
+        Apprends, progresse et prends plaisir à découvrir<br>
+        <strong>la beauté de la <span class="accent">langue française</span>.</strong>
+      </p>
+      <div class="fleur-de-lis">⚜️</div>
+    </div>
+
+    <!-- CARDS (inside hero so background shows through) -->
+    <div class="cards-section">
+      <div class="cards">
+
+        <div class="card card--quiz">
+          <div class="card-icon">❓</div>
+          <h2 class="card-title">Quiz</h2>
+          <p class="card-desc">Teste tes connaissances et relève des défis amusants&nbsp;!</p>
+          <a href="quiz-app/quiz.html" class="card-btn btn--quiz">C'est parti&nbsp;! →</a>
+        </div>
+
+        <div class="card card--lecons">
+          <div class="card-icon">📖</div>
+          <h2 class="card-title">Leçons</h2>
+          <p class="card-desc">Découvre des leçons claires, simples et passionnantes pour progresser à ton rythme.</p>
+          <a href="lecons-app/lecons.html" class="card-btn btn--lecons">Découvrir →</a>
+        </div>
+
+        <div class="card card--images">
+          <div class="card-icon">🖼️</div>
+          <h2 class="card-title">Images</h2>
+          <p class="card-desc">Explore une collection d'images inspirantes et pleines de vie&nbsp;!</p>
+          <a href="images-app/images.html" class="card-btn btn--images">Explorer →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BANNER -->
+  <div class="banner">
+    <p>✨ Chaque jour est une nouvelle chance d'<span class="accent">apprendre</span>&nbsp;!</p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>J'❤️ le français &nbsp;|&nbsp; Fait avec passion 🇫🇷</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
