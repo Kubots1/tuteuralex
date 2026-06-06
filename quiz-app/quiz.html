@@ -28,10 +28,15 @@
 
   <main id="quiz-app">
 
-    <!-- ══════════════════════════════════════
-         ÉCRAN 1 — SÉLECTION THÈME
-    ══════════════════════════════════════ -->
-    <section id="screen-themes">
+    <!-- ÉCRAN 0 — CHARGEMENT -->
+    <section id="screen-loading">
+      <div class="quiz-page-header">
+        <div class="quiz-page-title">⏳ Chargement…</div>
+      </div>
+    </section>
+
+    <!-- ÉCRAN 1 — SÉLECTION THÈME -->
+    <section id="screen-themes" class="hidden">
       <div class="quiz-page-header">
         <h1 class="quiz-page-title">❓ Quiz</h1>
         <p class="quiz-page-sub">Choisis un thème pour commencer !</p>
@@ -39,9 +44,7 @@
       <div id="theme-grid" class="theme-grid"></div>
     </section>
 
-    <!-- ══════════════════════════════════════
-         ÉCRAN 2 — SÉLECTION NIVEAU
-    ══════════════════════════════════════ -->
+    <!-- ÉCRAN 2 — SÉLECTION NIVEAU -->
     <section id="screen-niveaux" class="hidden">
       <div class="quiz-page-header">
         <button id="back-to-themes" class="q-btn secondary">← Thèmes</button>
@@ -51,12 +54,8 @@
       <div id="niveau-grid" class="niveau-grid"></div>
     </section>
 
-    <!-- ══════════════════════════════════════
-         ÉCRAN 3 — QUIZ EN COURS
-    ══════════════════════════════════════ -->
+    <!-- ÉCRAN 3 — QUIZ EN COURS -->
     <section id="screen-quiz" class="hidden">
-
-      <!-- Topbar -->
       <div class="quiz-topbar">
         <button id="quit-quiz" class="q-btn secondary">✕ Quitter</button>
         <div class="quiz-meta">
@@ -68,8 +67,6 @@
           <span id="hud-lives" class="hud-lives"></span>
         </div>
       </div>
-
-      <!-- Progression -->
       <div class="quiz-progress-outer">
         <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
       </div>
@@ -77,20 +74,15 @@
         <span id="quiz-q-counter">Question 1 / 20</span>
         <span id="quiz-q-timer" class="quiz-timer"></span>
       </div>
-
-      <!-- Carte question -->
       <div class="quiz-card-wrap">
         <div id="quiz-card" class="quiz-card">
           <p id="quiz-question-text" class="quiz-question-text"></p>
           <div id="quiz-choices" class="quiz-choices"></div>
         </div>
       </div>
-
     </section>
 
-    <!-- ══════════════════════════════════════
-         ÉCRAN 4 — RÉSULTAT FINAL
-    ══════════════════════════════════════ -->
+    <!-- ÉCRAN 4 — RÉSULTAT FINAL -->
     <section id="screen-result" class="hidden">
       <div class="result-card">
         <div id="result-emoji"  class="result-emoji"></div>
@@ -99,9 +91,57 @@
         <p id="result-msg"      class="result-msg"></p>
         <div class="result-stars" id="result-stars"></div>
         <div class="result-actions">
-          <button id="result-retry"   class="q-btn primary">🔄 Rejouer</button>
-          <button id="result-change"  class="q-btn secondary">📚 Autre niveau</button>
-          <button id="result-themes"  class="q-btn secondary">🏠 Thèmes</button>
+          <button id="result-retry"  class="q-btn primary">🔄 Rejouer</button>
+          <button id="result-change" class="q-btn secondary">📚 Autre niveau</button>
+          <button id="result-themes" class="q-btn secondary">🏠 Thèmes</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÉCRAN 5 — ÉDITEUR ADMIN -->
+    <section id="screen-editor" class="hidden">
+      <div class="ed-topbar">
+        <button id="ed-cancel" class="q-btn secondary">← Retour</button>
+        <span class="ed-title">✏️ Éditeur de quiz</span>
+        <div class="ed-topbar-actions">
+          <button id="ed-delete" class="q-btn secondary">🗑️ Supprimer ce niveau</button>
+          <button id="ed-save"   class="q-btn primary">💾 Sauvegarder</button>
+        </div>
+      </div>
+      <div class="ed-body">
+        <div class="ed-meta-card">
+          <h3 class="ed-section-title">📋 Thème</h3>
+          <div class="ed-meta-grid">
+            <label class="ed-label">ID unique (ex: se-presenter)
+              <input id="ed-theme-id" class="ed-input" type="text" placeholder="se-presenter" />
+            </label>
+            <label class="ed-label">Nom affiché
+              <input id="ed-theme-name" class="ed-input" type="text" placeholder="Se présenter" />
+            </label>
+            <label class="ed-label">Icône (emoji)
+              <input id="ed-theme-icon" class="ed-input" type="text" placeholder="👤" maxlength="4" />
+            </label>
+            <label class="ed-label">Couleur
+              <input id="ed-theme-color" class="ed-input" type="color" value="#7c3aed" />
+            </label>
+          </div>
+          <label class="ed-label">Niveau
+            <select id="ed-niveau" class="ed-input ed-select">
+              <option value="A0">A0 — Débutant</option>
+              <option value="A1">A1 — Débutant</option>
+              <option value="A2">A2 — Élémentaire</option>
+              <option value="B1">B1 — Intermédiaire</option>
+              <option value="B2">B2 — Intermédiaire avancé</option>
+            </select>
+          </label>
+        </div>
+        <div class="ed-questions-wrap">
+          <div class="ed-questions-header">
+            <h3 class="ed-section-title">❓ Questions</h3>
+            <p class="ed-hint">⚠️ La <strong>première réponse</strong> est toujours la bonne. Les autres sont les mauvaises réponses.</p>
+          </div>
+          <div id="ed-questions-list"></div>
+          <button id="ed-add-question" class="q-btn secondary ed-add-btn">➕ Ajouter une question</button>
         </div>
       </div>
     </section>
@@ -113,7 +153,6 @@
   <script src="../js/auth.js"></script>
   <script src="../js/progress.js"></script>
   <script src="../main.js"></script>
-  <script src="quiz-data.js"></script>
   <script src="quiz.js"></script>
 </body>
 </html>
