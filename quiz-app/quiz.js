@@ -24,15 +24,15 @@ const NIVEAU_DESCS = {
 
 /* ── État ── */
 const state = {
-  allRows   : [],   // toutes les lignes Supabase brutes
-  themes    : [],   // objets thème agrégés {theme_id, theme, icon, color, colorLight, niveaux:{}}
-  theme     : null,
-  niveau    : null,
-  questions : [],
-  index     : 0,
-  score     : 0,
-  lives     : 3,
-  answered  : false,
+  allRows  : [],
+  themes   : [],
+  theme    : null,
+  niveau   : null,
+  questions: [],
+  index    : 0,
+  score    : 0,
+  lives    : 3,
+  answered : false,
 };
 
 /* ── Écrans ── */
@@ -66,7 +66,7 @@ async function loadQuizzes() {
     .order('theme_id')
     .order('niveau');
 
-  if (error) { console.warn('Erreur chargement quizzes:', error.message); }
+  if (error) console.warn('Erreur chargement quizzes:', error.message);
 
   state.allRows = data || [];
   aggregateThemes();
@@ -79,12 +79,12 @@ function aggregateThemes() {
   state.allRows.forEach(row => {
     if (!map[row.theme_id]) {
       map[row.theme_id] = {
-        theme_id   : row.theme_id,
-        theme      : row.theme,
-        icon       : row.icon,
-        color      : row.color,
-        colorLight : row.color_light,
-        niveaux    : {}
+        theme_id  : row.theme_id,
+        theme     : row.theme,
+        icon      : row.icon,
+        color     : row.color,
+        colorLight: row.color_light,
+        niveaux   : {}
       };
     }
     map[row.theme_id].niveaux[row.niveau] = row.questions;
@@ -99,7 +99,6 @@ function buildThemeGrid() {
   const grid = $('theme-grid');
   grid.innerHTML = '';
 
-  // Bouton admin — créer un quiz
   if (window.Auth?.isAdmin?.()) {
     const addBtn = document.createElement('div');
     addBtn.className = 'theme-card theme-card--add';
@@ -108,12 +107,14 @@ function buildThemeGrid() {
       <div class="theme-card-title">Nouveau quiz</div>
       <div class="theme-card-cta">Créer un thème ou ajouter un niveau →</div>
     `;
-    addBtn.addEventListener('click', () => openEditor(null));
     grid.appendChild(addBtn);
   }
 
   if (!state.themes.length) {
-    grid.innerHTML += '<p style="color:var(--text-soft);text-align:center;padding:2rem;grid-column:1/-1">Aucun quiz disponible pour l\'instant.</p>';
+    const msg = document.createElement('p');
+    msg.style.cssText = 'color:var(--text-soft);text-align:center;padding:2rem;grid-column:1/-1';
+    msg.textContent = 'Aucun quiz disponible pour l\'instant.';
+    grid.appendChild(msg);
     return;
   }
 
@@ -121,6 +122,7 @@ function buildThemeGrid() {
     const niveauxDispo = NIVEAUX_ORDER.filter(n => theme.niveaux[n]?.length);
     const card = document.createElement('div');
     card.className = 'theme-card';
+    card.dataset.themeId = theme.theme_id;
     card.style.background  = `linear-gradient(145deg, ${theme.colorLight}, rgba(255,255,255,0.03))`;
     card.style.borderColor = theme.color + '55';
     card.innerHTML = `
@@ -132,17 +134,31 @@ function buildThemeGrid() {
       <div class="theme-card-cta">20 questions par niveau →</div>
       ${window.Auth?.isAdmin?.() ? `<button class="theme-edit-btn" data-id="${theme.theme_id}">✏️</button>` : ''}
     `;
-    card.querySelector('.theme-card-icon').addEventListener('click', () => selectTheme(theme));
-    card.querySelector('.theme-card-title').addEventListener('click', () => selectTheme(theme));
-    card.querySelector('.theme-card-cta').addEventListener('click',  () => selectTheme(theme));
-    card.querySelector('.theme-card-levels')?.addEventListener('click', () => selectTheme(theme));
-    card.querySelector('.theme-edit-btn')?.addEventListener('click', e => {
-      e.stopPropagation();
-      openEditor(theme.theme_id);
-    });
     grid.appendChild(card);
   });
 }
+
+/* ── Délégation d'événements sur la grille (une seule fois) ── */
+$('theme-grid').addEventListener('click', e => {
+  // Bouton ➕ nouveau quiz
+  if (e.target.closest('.theme-card--add')) {
+    openEditor(null);
+    return;
+  }
+  // Bouton ✏️ éditer un thème
+  const editBtn = e.target.closest('.theme-edit-btn');
+  if (editBtn) {
+    e.stopPropagation();
+    openEditor(editBtn.dataset.id);
+    return;
+  }
+  // Clic sur une carte thème
+  const card = e.target.closest('.theme-card:not(.theme-card--add)');
+  if (card?.dataset.themeId) {
+    const theme = state.themes.find(t => t.theme_id === card.dataset.themeId);
+    if (theme) selectTheme(theme);
+  }
+});
 
 /* ══════════════════════════════════════════
    SÉLECTION THÈME / NIVEAU
@@ -166,7 +182,7 @@ function buildNiveauGrid(theme) {
     const card = document.createElement('div');
     card.className = 'niveau-card';
     card.innerHTML = `
-      <div class="niveau-dot" style="background:${meta.color};color:${meta.color}"></div>
+      <div class="niveau-dot" style="background:${meta.color}"></div>
       <div class="niveau-info">
         <div class="niveau-label">${meta.label}</div>
         <div class="niveau-desc">${NIVEAU_DESCS[n]}</div>
@@ -286,11 +302,11 @@ function showResult() {
   const stars = pct >= 90 ? 3 : pct >= 60 ? 2 : pct >= 30 ? 1 : 0;
 
   let emoji, title, msg;
-  if (pct === 100)     { emoji='🏆'; title='Parfait !';    msg='Tu as répondu correctement à toutes les questions !'; }
-  else if (pct >= 80)  { emoji='⭐'; title='Excellent !';   msg='Très belle performance ! Continue comme ça.'; }
-  else if (pct >= 60)  { emoji='💪'; title='Bien joué !';   msg='Tu es sur la bonne voie. Continue à t\'entraîner.'; }
-  else if (pct >= 40)  { emoji='📚'; title='Pas mal !';     msg='Tu as les bases. Révise et réessaie !'; }
-  else                 { emoji='🌱'; title='Continue !';    msg='Ce niveau est encore difficile. Reprends depuis le début.'; }
+  if (pct === 100)    { emoji='🏆'; title='Parfait !';   msg='Tu as répondu correctement à toutes les questions !'; }
+  else if (pct >= 80) { emoji='⭐'; title='Excellent !';  msg='Très belle performance ! Continue comme ça.'; }
+  else if (pct >= 60) { emoji='💪'; title='Bien joué !';  msg="Tu es sur la bonne voie. Continue à t'entraîner."; }
+  else if (pct >= 40) { emoji='📚'; title='Pas mal !';    msg='Tu as les bases. Révise et réessaie !'; }
+  else                { emoji='🌱'; title='Continue !';   msg='Ce niveau est encore difficile. Reprends depuis le début.'; }
 
   $('result-emoji').textContent = emoji;
   $('result-title').textContent = title;
@@ -303,10 +319,10 @@ function showResult() {
 
   if (window.Progress && state.theme) {
     Progress.save({
-      type  : 'quiz',
-      ref   : `${state.theme.theme_id}/${state.niveau}`,
-      label : `${state.theme.icon} ${state.theme.theme} — ${state.niveau}`,
-      score : state.score,
+      type : 'quiz',
+      ref  : `${state.theme.theme_id}/${state.niveau}`,
+      label: `${state.theme.icon} ${state.theme.theme} — ${state.niveau}`,
+      score: state.score,
       total
     });
   }
@@ -320,14 +336,13 @@ $('quit-quiz').addEventListener('click',     () => showScreen('themes'));
 /* ══════════════════════════════════════════
    ÉDITEUR ADMIN
 ══════════════════════════════════════════ */
-let editorThemeId = null;   // null = nouveau thème
-let editorQuestions = [];   // [{q, a:[bonne, fausse, fausse]}, ...]
+let editorThemeId  = null;
+let editorQuestions = [];
 
 function openEditor(themeId) {
   editorThemeId = themeId;
 
   if (themeId) {
-    // Édition d'un thème existant
     const theme = state.themes.find(t => t.theme_id === themeId);
     $('ed-theme-id').value    = theme.theme_id;
     $('ed-theme-name').value  = theme.theme;
@@ -336,7 +351,6 @@ function openEditor(themeId) {
     $('ed-niveau').value      = 'A0';
     loadEditorQuestions(theme);
   } else {
-    // Nouveau thème
     $('ed-theme-id').value    = '';
     $('ed-theme-name').value  = '';
     $('ed-theme-icon').value  = '❓';
@@ -351,7 +365,7 @@ function openEditor(themeId) {
 
 function loadEditorQuestions(theme) {
   const niveau = $('ed-niveau').value;
-  editorQuestions = (theme.niveaux[niveau] || []).map(q => ({
+  editorQuestions = (theme?.niveaux[niveau] || []).map(q => ({
     q: q.q,
     a: [...q.a]
   }));
@@ -361,7 +375,7 @@ function loadEditorQuestions(theme) {
 $('ed-niveau').addEventListener('change', () => {
   if (!editorThemeId) { editorQuestions = []; renderEditorQuestions(); return; }
   const theme = state.themes.find(t => t.theme_id === editorThemeId);
-  if (theme) loadEditorQuestions(theme);
+  loadEditorQuestions(theme);
 });
 
 function renderEditorQuestions() {
@@ -376,13 +390,13 @@ function renderEditorQuestions() {
         <span class="ed-q-num">Q${qi + 1}</span>
         <button class="ed-q-del q-btn secondary" data-qi="${qi}">🗑️</button>
       </div>
-      <input class="ed-input" type="text" placeholder="Question…" value="${escHtml(q.q)}" data-qi="${qi}" data-field="q" />
+      <input class="ed-input" type="text" placeholder="Question…" value="${escHtml(q.q)}" data-field="q" />
       <div class="ed-answers">
         <label class="ed-answer-label">✅ Bonne réponse</label>
-        <input class="ed-input ed-answer correct-answer" type="text" placeholder="Réponse correcte…" value="${escHtml(q.a[0] || '')}" data-qi="${qi}" data-ai="0" />
+        <input class="ed-input ed-answer correct-answer" type="text" placeholder="Réponse correcte…" value="${escHtml(q.a[0] || '')}" data-ai="0" />
         <label class="ed-answer-label">❌ Mauvaises réponses</label>
         ${[1,2,3].map(ai => `
-          <input class="ed-input ed-answer" type="text" placeholder="Mauvaise réponse ${ai}…" value="${escHtml(q.a[ai] || '')}" data-qi="${qi}" data-ai="${ai}" />
+          <input class="ed-input ed-answer" type="text" placeholder="Mauvaise réponse ${ai}…" value="${escHtml(q.a[ai] || '')}" data-ai="${ai}" />
         `).join('')}
       </div>
     `;
@@ -418,10 +432,10 @@ $('ed-save').addEventListener('click', async () => {
   const themeId   = $('ed-theme-id').value.trim().replace(/\s+/g, '-').toLowerCase();
   const themeName = $('ed-theme-name').value.trim();
   const icon      = $('ed-theme-icon').value.trim() || '❓';
-  const color     = $('ed-theme-color').value.trim() || '#7c3aed';
+  const color     = $('ed-theme-color').value || '#7c3aed';
   const niveau    = $('ed-niveau').value;
 
-  if (!themeId || !themeName) { alert('Remplis l\'ID et le nom du thème.'); return; }
+  if (!themeId || !themeName) { alert("Remplis l'ID et le nom du thème."); return; }
 
   const questions = editorQuestions.filter(q => q.q.trim() && q.a[0].trim());
   if (!questions.length) { alert('Ajoute au moins une question avec une bonne réponse.'); return; }
@@ -433,19 +447,10 @@ $('ed-save').addEventListener('click', async () => {
   btn.textContent = '⏳ Sauvegarde…';
   btn.disabled = true;
 
-  // Cherche si cette combinaison thème+niveau existe déjà
   const existing = state.allRows.find(r => r.theme_id === themeId && r.niveau === niveau);
-
   const colorLight = hexToRgba(color, 0.15);
-  const payload = {
-    theme_id   : themeId,
-    theme      : themeName,
-    icon,
-    color,
-    color_light: colorLight,
-    niveau,
-    questions
-  };
+
+  const payload = { theme_id: themeId, theme: themeName, icon, color, color_light: colorLight, niveau, questions };
 
   let error;
   if (existing) {
@@ -474,7 +479,7 @@ $('ed-delete').addEventListener('click', async () => {
   if (!editorThemeId) return;
   const niveau = $('ed-niveau').value;
   const row = state.allRows.find(r => r.theme_id === editorThemeId && r.niveau === niveau);
-  if (!row) { alert('Ce niveau n\'existe pas encore.'); return; }
+  if (!row) { alert("Ce niveau n'existe pas encore."); return; }
   if (!confirm(`Supprimer le quiz "${editorThemeId}" niveau ${niveau} ?`)) return;
 
   const sb = getClient();
