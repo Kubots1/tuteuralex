@@ -29,12 +29,7 @@
     <div class="auth-card">
       <div class="auth-icon">🔑</div>
       <h1>Connexion</h1>
-      <p class="auth-sub">Crée un compte gratuit pour suivre ta progression sur le site.</p>
-
-      <div class="auth-tabs">
-        <button class="auth-tab active" data-tab="login">Se connecter</button>
-        <button class="auth-tab" data-tab="signup">S'inscrire</button>
-      </div>
+      <p class="auth-sub">Espace réservé à l'administrateur.</p>
 
       <form id="form-login" class="auth-form">
         <label>E-mail
@@ -44,19 +39,6 @@
           <input type="password" id="login-password" required autocomplete="current-password" placeholder="••••••••" />
         </label>
         <button type="submit" class="auth-btn primary">Se connecter</button>
-      </form>
-
-      <form id="form-signup" class="auth-form hidden">
-        <label>Prénom ou pseudo
-          <input type="text" id="signup-name" autocomplete="name" placeholder="Marie" />
-        </label>
-        <label>E-mail
-          <input type="email" id="signup-email" required autocomplete="email" placeholder="ton@email.com" />
-        </label>
-        <label>Mot de passe (6 caractères min.)
-          <input type="password" id="signup-password" required minlength="6" autocomplete="new-password" placeholder="••••••••" />
-        </label>
-        <button type="submit" class="auth-btn primary">Créer mon compte</button>
       </form>
 
       <p id="auth-msg" class="auth-msg hidden"></p>
@@ -69,19 +51,8 @@
   <script src="js/auth.js"></script>
   <script src="main.js"></script>
   <script>
-    const params = new URLSearchParams(location.search);
+    const params   = new URLSearchParams(location.search);
     const redirect = params.get('redirect') || 'index.html';
-
-    document.querySelectorAll('.auth-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        const isLogin = tab.dataset.tab === 'login';
-        document.getElementById('form-login').classList.toggle('hidden', !isLogin);
-        document.getElementById('form-signup').classList.toggle('hidden', isLogin);
-        hideMsg();
-      });
-    });
 
     function showMsg(text, ok) {
       const el = document.getElementById('auth-msg');
@@ -89,7 +60,6 @@
       el.className = 'auth-msg ' + (ok ? 'ok' : 'err');
       el.classList.remove('hidden');
     }
-    function hideMsg() { document.getElementById('auth-msg').classList.add('hidden'); }
 
     document.addEventListener('auth-ready', () => {
       if (Auth.isLoggedIn()) location.href = redirect;
@@ -97,7 +67,6 @@
 
     document.getElementById('form-login').addEventListener('submit', async e => {
       e.preventDefault();
-      hideMsg();
       try {
         await Auth.signIn(
           document.getElementById('login-email').value.trim(),
@@ -106,25 +75,6 @@
         location.href = redirect;
       } catch (err) {
         showMsg(err.message || 'Erreur de connexion', false);
-      }
-    });
-
-    document.getElementById('form-signup').addEventListener('submit', async e => {
-      e.preventDefault();
-      hideMsg();
-      try {
-        const data = await Auth.signUp(
-          document.getElementById('signup-email').value.trim(),
-          document.getElementById('signup-password').value,
-          document.getElementById('signup-name').value.trim()
-        );
-        if (data.session) {
-          location.href = redirect;
-        } else {
-          showMsg('Compte créé ! Vérifie ton e-mail si la confirmation est activée, puis connecte-toi.', true);
-        }
-      } catch (err) {
-        showMsg(err.message || 'Erreur d\'inscription', false);
       }
     });
   </script>
