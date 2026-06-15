@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Apprendre le Français</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="flashcards.css" />
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -38,7 +39,6 @@
       <div class="fleur-de-lis">⚜️</div>
     </div>
 
-    <!-- CARDS (inside hero so background shows through) -->
     <div class="cards-section">
       <div class="cards">
 
@@ -67,6 +67,53 @@
     </div>
   </section>
 
+  <!-- FLASHCARDS -->
+  <section class="fc-section" id="fc-section">
+    <div class="fc-section-header">
+      <h2 class="fc-section-title">🃏 Flashcards du cours</h2>
+      <p class="fc-section-sub">Clique sur une carte pour la retourner !</p>
+      <div id="fc-admin-bar" class="fc-admin-bar hidden">
+        <button id="fc-add-btn" class="fc-add-btn">➕ Ajouter une carte</button>
+        <button id="fc-clear-btn" class="fc-clear-btn">🗑️ Tout effacer</button>
+      </div>
+    </div>
+
+    <!-- Formulaire admin (caché par défaut) -->
+    <div id="fc-form" class="fc-form hidden">
+      <div class="fc-form-inner">
+        <h3 class="fc-form-title">✏️ Nouvelle flashcard</h3>
+        <label class="fc-label">Mot français
+          <input id="fc-input-mot" class="fc-input" type="text" placeholder="ex : un parapluie" />
+        </label>
+        <label class="fc-label">Traduction
+          <input id="fc-input-trad" class="fc-input" type="text" placeholder="ex : an umbrella" />
+        </label>
+        <label class="fc-label">Définition en français (optionnel)
+          <input id="fc-input-def" class="fc-input" type="text" placeholder="ex : objet qui protège de la pluie" />
+        </label>
+        <label class="fc-label">Exemple de phrase (optionnel)
+          <input id="fc-input-ex" class="fc-input" type="text" placeholder="ex : J'ai oublié mon parapluie." />
+        </label>
+        <div class="fc-form-actions">
+          <button id="fc-form-cancel" class="fc-btn secondary">Annuler</button>
+          <button id="fc-form-save"   class="fc-btn primary">✅ Ajouter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grille de cartes -->
+    <div id="fc-grid" class="fc-grid">
+      <p id="fc-empty" class="fc-empty">Aucune flashcard pour l'instant. 🃏</p>
+    </div>
+
+    <!-- Navigation -->
+    <div id="fc-nav" class="fc-nav hidden">
+      <button id="fc-prev" class="fc-nav-btn">‹</button>
+      <span id="fc-counter" class="fc-counter"></span>
+      <button id="fc-next" class="fc-nav-btn">›</button>
+    </div>
+  </section>
+
   <!-- BANNER -->
   <div class="banner">
     <p>✨ Chaque jour est une nouvelle chance d'<span class="accent">apprendre</span>&nbsp;!</p>
@@ -81,5 +128,6 @@
   <script src="js/config.js"></script>
   <script src="js/auth.js"></script>
   <script src="main.js"></script>
+  <script src="flashcards.js"></script>
 </body>
 </html>
