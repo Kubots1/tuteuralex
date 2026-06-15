@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ressources – Apprendre le Français</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="ressources.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">🏠 Accueil</a></li>
+      <li><a href="lecons-app/lecons.html">📖 Leçons</a></li>
+      <li><a href="quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="images-app/images.html">🖼️ Images</a></li>
+      <li><a href="ressources.html" class="active">🎬 Ressources</a></li>
+      <li><a href="contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <main id="ressources-app">
+
+    <div class="res-header">
+      <h1 class="res-title">🎬 Mes recommandations</h1>
+      <p class="res-sub">Des ressources sélectionnées par ton professeur pour progresser en français au quotidien.</p>
+      <div id="res-admin-bar" class="res-admin-bar hidden">
+        <button id="res-add-btn" class="res-add-btn">➕ Ajouter une ressource</button>
+      </div>
+    </div>
+
+    <!-- Formulaire admin -->
+    <div id="res-form" class="res-form hidden">
+      <div class="res-form-inner">
+        <h3 class="res-form-title">✏️ Nouvelle ressource</h3>
+        <div class="res-form-grid">
+          <label class="res-label">Type
+            <select id="res-input-type" class="res-input">
+              <option value="youtube">▶️ Vidéo YouTube</option>
+              <option value="film">🎬 Film</option>
+              <option value="serie">📺 Série</option>
+              <option value="chanson">🎵 Chanson</option>
+              <option value="podcast">🎙️ Podcast</option>
+              <option value="site">🌐 Site web</option>
+            </select>
+          </label>
+          <label class="res-label">Niveau
+            <select id="res-input-niveau" class="res-input">
+              <option value="tous">Tous niveaux</option>
+              <option value="A0">A0</option>
+              <option value="A1">A1</option>
+              <option value="A2">A2</option>
+              <option value="B1">B1</option>
+              <option value="B2">B2</option>
+            </select>
+          </label>
+        </div>
+        <label class="res-label">Titre
+          <input id="res-input-titre" class="res-input" type="text" placeholder="ex : Français avec Pierre" />
+        </label>
+        <label class="res-label">Auteur / Chaîne / Réalisateur (optionnel)
+          <input id="res-input-auteur" class="res-input" type="text" placeholder="ex : Pierre Ducresson" />
+        </label>
+        <label class="res-label">Lien URL
+          <input id="res-input-url" class="res-input" type="url" placeholder="https://youtube.com/..." />
+        </label>
+        <label class="res-label">Description (optionnel)
+          <textarea id="res-input-desc" class="res-input res-textarea" rows="2" placeholder="Pourquoi tu recommandes cette ressource ?"></textarea>
+        </label>
+        <div class="res-form-actions">
+          <button id="res-form-cancel" class="res-btn secondary">Annuler</button>
+          <button id="res-form-save"   class="res-btn primary">✅ Ajouter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="res-filtres">
+      <div class="res-filtre-group">
+        <span class="res-filtre-label">Type</span>
+        <div class="res-pills" id="filtre-type">
+          <button class="res-pill active" data-val="tous">Tous</button>
+          <button class="res-pill" data-val="youtube">▶️ YouTube</button>
+          <button class="res-pill" data-val="film">🎬 Films</button>
+          <button class="res-pill" data-val="serie">📺 Séries</button>
+          <button class="res-pill" data-val="chanson">🎵 Chansons</button>
+          <button class="res-pill" data-val="podcast">🎙️ Podcasts</button>
+          <button class="res-pill" data-val="site">🌐 Sites</button>
+        </div>
+      </div>
+      <div class="res-filtre-group">
+        <span class="res-filtre-label">Niveau</span>
+        <div class="res-pills" id="filtre-niveau">
+          <button class="res-pill active" data-val="tous">Tous</button>
+          <button class="res-pill" data-val="A0">A0</button>
+          <button class="res-pill" data-val="A1">A1</button>
+          <button class="res-pill" data-val="A2">A2</button>
+          <button class="res-pill" data-val="B1">B1</button>
+          <button class="res-pill" data-val="B2">B2</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grille de ressources -->
+    <div id="res-grid" class="res-grid">
+      <p id="res-empty" class="res-empty">⏳ Chargement…</p>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="main.js"></script>
+  <script src="ressources.js"></script>
+</body>
+</html>
