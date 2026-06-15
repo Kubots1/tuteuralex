@@ -330,3 +330,184 @@
   .fc-card { height: 200px; }
   .filtres-wrap { flex-direction: column; }
 }
+/* ══════════════════════════════════════════
+   PATCH — À ajouter à la fin de lecons.css
+══════════════════════════════════════════ */
+
+.lecon-admin-bar {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  margin-top: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.lecon-new-btn {
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.lecon-new-btn:hover { opacity: 0.85; transform: scale(1.04); }
+
+.lecon-import-btn {
+  padding: 0.6rem 1.5rem;
+  background: rgba(59,130,246,0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59,130,246,0.4);
+  border-radius: 2rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.lecon-import-btn:hover {
+  background: rgba(59,130,246,0.3);
+  transform: scale(1.04);
+}
+
+/* Carte leçon */
+.lecon-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(168,85,247,0.2);
+  border-radius: 1.2rem;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.lecon-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+}
+
+.lecon-card-top {
+  padding: 1.2rem 1.2rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.lecon-card-icon { font-size: 2rem; }
+
+.lecon-card-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.lecon-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.2rem 0.7rem;
+  border-radius: 2rem;
+  border: 1px solid;
+}
+
+.lecon-badge-theme {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-soft);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.lecon-badge-draft {
+  background: rgba(245,158,11,0.15);
+  color: #fcd34d;
+  border-color: rgba(245,158,11,0.3);
+}
+
+.lecon-card-body { padding: 0.8rem 1.2rem 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.lecon-card-titre { font-weight: 800; font-size: 1.05rem; color: var(--white); }
+
+.lecon-card-desc {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+.lecon-card-meta { font-size: 0.75rem; color: rgba(255,255,255,0.35); }
+
+.lecon-card-actions { display: flex; gap: 0.6rem; margin-top: 0.3rem; }
+
+.lecon-btn-lire {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 2rem;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.lecon-btn-lire:hover { opacity: 0.85; }
+
+.lecon-btn-edit {
+  padding: 0.5rem 0.8rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 2rem;
+  color: var(--white);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+.lecon-btn-edit:hover { background: rgba(255,255,255,0.15); }
+
+/* Contenu leçon */
+.lecon-content {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+}
+
+.lecon-titre {
+  font-family: 'Pacifico', cursive;
+  font-size: 2rem;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.lecon-intro {
+  color: var(--text-soft);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.lecon-blocs { display: flex; flex-direction: column; gap: 1.5rem; }
+
+/* Blocs */
+.bloc-texte {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(168,85,247,0.15);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.88);
+  font-size: 0.97rem;
+  white-space: pre-line;
+}
+
+.bloc-image { text-align: center; }
+.bloc-image img {
+  max-width: 100%;
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.bloc-image-legende {
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  font-style: italic;
+}
+
+.bloc-exercice {
+  background: rgba(26,18,80,0.5);
+  border: 1px solid rgba(168,85,247,0.25);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
