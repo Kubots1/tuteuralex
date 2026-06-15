@@ -1,0 +1,301 @@
+/* ============================================================
+   flashcards.css — Section flashcards sur l'accueil
+   ============================================================ */
+
+.fc-section {
+  padding: 4rem 2rem 5rem;
+  background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+  border-top: 1px solid rgba(168,85,247,0.15);
+}
+
+.fc-section-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.fc-section-title {
+  font-family: 'Pacifico', cursive;
+  font-size: 2.2rem;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+}
+
+.fc-section-sub {
+  color: var(--text-soft);
+  font-size: 1rem;
+}
+
+/* Barre admin */
+.fc-admin-bar {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.fc-add-btn {
+  padding: 0.55rem 1.3rem;
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.fc-add-btn:hover { opacity: 0.85; transform: scale(1.04); }
+
+.fc-clear-btn {
+  padding: 0.55rem 1.3rem;
+  background: rgba(239,68,68,0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 2rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.fc-clear-btn:hover { background: rgba(239,68,68,0.3); }
+
+/* Formulaire admin */
+.fc-form {
+  max-width: 500px;
+  margin: 0 auto 2rem;
+}
+
+.fc-form-inner {
+  background: rgba(26,18,80,0.7);
+  border: 1px solid rgba(168,85,247,0.3);
+  border-radius: 1.2rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.fc-form-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+
+.fc-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.fc-input {
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(168,85,247,0.3);
+  background: rgba(13,11,43,0.6);
+  color: var(--white);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+}
+.fc-input:focus { outline: none; border-color: var(--purple-glow); }
+
+.fc-form-actions {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: flex-end;
+  margin-top: 0.3rem;
+}
+
+.fc-btn {
+  padding: 0.55rem 1.2rem;
+  border-radius: 2rem;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.fc-btn:hover { opacity: 0.85; transform: scale(1.03); }
+.fc-btn.primary   { background: linear-gradient(135deg, var(--purple), var(--pink)); color: white; }
+.fc-btn.secondary { background: rgba(255,255,255,0.1); color: var(--white); }
+
+/* Grille */
+.fc-grid {
+  position: relative;
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 260px;
+}
+
+.fc-empty {
+  text-align: center;
+  color: var(--text-soft);
+  padding: 3rem;
+  font-size: 1rem;
+}
+
+/* Carte wrapper */
+.fc-card-wrap {
+  display: none;
+  position: relative;
+}
+.fc-card-wrap.active { display: block; }
+
+/* Flip card */
+.fc-card {
+  width: 100%;
+  height: 260px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.fc-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+}
+.fc-inner.flipped { transform: rotateY(180deg); }
+
+.fc-front, .fc-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+
+.fc-front {
+  background: linear-gradient(145deg, rgba(124,58,237,0.3), rgba(236,72,153,0.15));
+  border: 2px solid rgba(168,85,247,0.4);
+}
+
+.fc-back {
+  background: linear-gradient(145deg, rgba(30,64,175,0.3), rgba(6,78,59,0.2));
+  border: 2px solid rgba(59,130,246,0.4);
+  transform: rotateY(180deg);
+}
+
+.fc-front-label, .fc-back-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-soft);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+.fc-mot {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  color: var(--white);
+  line-height: 1.2;
+  text-shadow: 0 2px 12px rgba(168,85,247,0.4);
+}
+
+.fc-hint {
+  margin-top: 1rem;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  font-style: italic;
+}
+
+.fc-trad {
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 0.6rem;
+}
+
+.fc-def {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+  margin-top: 0.4rem;
+}
+
+.fc-ex {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+  margin-top: 0.6rem;
+}
+
+/* Bouton supprimer (admin) */
+.fc-delete-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 2;
+}
+.fc-card-wrap:hover .fc-delete-btn { opacity: 1; }
+
+/* Navigation */
+.fc-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.fc-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(168,85,247,0.3);
+  background: rgba(168,85,247,0.1);
+  color: var(--white);
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+.fc-nav-btn:hover {
+  background: rgba(168,85,247,0.3);
+  border-color: rgba(168,85,247,0.7);
+}
+
+.fc-counter {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-soft);
+  min-width: 60px;
+  text-align: center;
+}
+
+.hidden { display: none !important; }
+
+@media (max-width: 600px) {
+  .fc-card { height: 220px; }
+  .fc-section { padding: 3rem 1rem 4rem; }
+}
