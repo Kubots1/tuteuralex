@@ -133,6 +133,58 @@ function updateAdminBar() {
   }
 }
 
+
+/* ══════════════════════════════════════════
+   IMPORT JSON
+══════════════════════════════════════════ */
+document.addEventListener('change', async e => {
+  if (e.target.id !== 'lecon-import-input') return;
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+
+  let json;
+  try {
+    json = JSON.parse(await file.text());
+  } catch {
+    alert('❌ Fichier JSON invalide.'); return;
+  }
+
+  if (!json.titre || !json.niveau || !json.blocs) {
+    alert('❌ Format incorrect. Le fichier doit contenir : titre, niveau, theme, icone, description, publie, blocs.'); return;
+  }
+
+  const sb = getClient();
+  if (!sb) return;
+
+  const btn  = $l('lecon-import-btn');
+  const orig = btn?.textContent;
+  if (btn) { btn.textContent = '⏳ Import…'; btn.disabled = true; }
+
+  const { error } = await sb.from('lecons').insert({
+    titre      : json.titre,
+    niveau     : json.niveau,
+    theme      : json.theme      || 'Général',
+    icone      : json.icone      || '📖',
+    description: json.description || null,
+    publie     : json.publie     ?? false,
+    blocs      : json.blocs      || [],
+  });
+
+  if (error) {
+    alert('❌ Erreur : ' + error.message);
+  } else {
+    alert(`✅ Leçon "${json.titre}" importée avec succès !`);
+    await loadLecons();
+  }
+
+  if (btn) { btn.textContent = orig; btn.disabled = false; }
+});
+
+$l('lecon-import-btn')?.addEventListener('click', () => {
+  $l('lecon-import-input')?.click();
+});
+
 /* ══════════════════════════════════════════
    LECTURE D'UNE LEÇON
 ══════════════════════════════════════════ */
