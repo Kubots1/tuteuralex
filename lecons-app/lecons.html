@@ -29,18 +29,17 @@
 
   <main id="lecons-app">
 
-    <!-- ══════════ ÉCRAN 1 — LISTE ══════════ -->
+    <!-- ══════════ LISTE ══════════ -->
     <section id="screen-liste">
       <div class="lecons-header">
         <h1 class="lecons-title">📖 Leçons</h1>
         <p class="lecons-sub">Choisis une leçon pour commencer à apprendre !</p>
         <div id="lecon-admin-bar" class="lecon-admin-bar hidden">
-          <button id="lecon-new-btn" class="lecon-new-btn">➕ Nouvelle leçon</button>
+          <button id="lecon-new-btn"    class="lecon-new-btn">➕ Nouvelle leçon</button>
           <button id="lecon-import-btn" class="lecon-import-btn">📥 Importer JSON</button>
           <input type="file" id="lecon-import-input" accept=".json" hidden />
         </div>
       </div>
-
       <div class="filtres-wrap">
         <div class="filtre-group">
           <span class="filtre-label">Niveau</span>
@@ -60,33 +59,31 @@
           </div>
         </div>
       </div>
-
-      <div id="lecons-grid" class="lecons-grid"></div>
+      <div id="lecons-grid"  class="lecons-grid"></div>
       <div id="lecons-empty" class="lecons-empty hidden">Aucune leçon disponible.</div>
     </section>
 
-    <!-- ══════════ ÉCRAN 2 — LEÇON ══════════ -->
+    <!-- ══════════ LEÇON ══════════ -->
     <section id="screen-lecon" class="hidden">
       <div class="lecon-topbar">
         <button id="btn-back-liste" class="lc-btn secondary">← Leçons</button>
         <div class="lecon-meta">
-          <span id="lecon-niveau-badge" class="lecon-niveau-badge"></span>
-          <span id="lecon-theme-badge"  class="lecon-theme-badge"></span>
+          <span id="lecon-niveau-badge"></span>
+          <span id="lecon-theme-badge" class="lecon-theme-badge"></span>
         </div>
       </div>
       <div class="lecon-content">
-        <h2 id="lecon-titre"  class="lecon-titre"></h2>
-        <p  id="lecon-intro"  class="lecon-intro"></p>
+        <h2 id="lecon-titre" class="lecon-titre"></h2>
+        <p  id="lecon-intro" class="lecon-intro"></p>
         <div id="lecon-blocs" class="lecon-blocs"></div>
       </div>
     </section>
 
-    <!-- ══════════ ÉCRAN 3 — ÉDITEUR ══════════ -->
+    <!-- ══════════ ÉDITEUR ══════════ -->
     <section id="screen-editor" class="hidden">
-
       <div class="ed-topbar">
         <button id="ed-cancel" class="lc-btn secondary">← Retour</button>
-        <span class="ed-title">✏️ Éditeur de leçon</span>
+        <span class="ed-topbar-title">✏️ Éditeur de leçon</span>
         <div class="ed-topbar-actions">
           <button id="ed-delete" class="lc-btn danger">🗑️ Supprimer</button>
           <button id="ed-save"   class="lc-btn primary">💾 Sauvegarder</button>
@@ -94,10 +91,9 @@
       </div>
 
       <div class="ed-body">
-
         <!-- Métadonnées -->
-        <div class="ed-meta-card">
-          <h3 class="ed-section-title">📋 Informations</h3>
+        <div class="ed-card">
+          <h3 class="ed-section-title">📋 Informations de la leçon</h3>
           <div class="ed-meta-grid">
             <label class="ed-label">Titre
               <input id="ed-titre" class="ed-input" type="text" placeholder="ex : Les salutations" />
@@ -106,49 +102,52 @@
               <input id="ed-theme" class="ed-input" type="text" placeholder="ex : Communication" />
             </label>
             <label class="ed-label">Niveau
-              <select id="ed-niveau" class="ed-input">
-                <option value="A0">A0</option>
-                <option value="A1" selected>A1</option>
-                <option value="A2">A2</option>
-                <option value="B1">B1</option>
-                <option value="B2">B2</option>
+              <select id="ed-niveau" class="ed-input ed-select">
+                <option value="A0">A0 — Débutant absolu</option>
+                <option value="A1" selected>A1 — Débutant</option>
+                <option value="A2">A2 — Élémentaire</option>
+                <option value="B1">B1 — Intermédiaire</option>
+                <option value="B2">B2 — Intermédiaire avancé</option>
               </select>
             </label>
             <label class="ed-label">Icône
               <input id="ed-icone" class="ed-input" type="text" placeholder="📖" maxlength="4" />
             </label>
           </div>
-          <label class="ed-label">Description courte
-            <textarea id="ed-description" class="ed-input ed-textarea-sm" rows="2" placeholder="Résumé de la leçon…"></textarea>
+          <label class="ed-label" style="margin-top:0.5rem">Description courte
+            <textarea id="ed-description" class="ed-input ed-textarea-sm" rows="2" placeholder="Résumé en 1-2 phrases…"></textarea>
           </label>
-          <label class="ed-label ed-publie-label">
+          <label class="ed-publie-label">
             <input id="ed-publie" type="checkbox" />
-            Publier la leçon (visible par les étudiants)
+            <span>Publier la leçon (visible par les étudiants)</span>
           </label>
         </div>
 
         <!-- Blocs -->
-        <div class="ed-blocs-wrap">
+        <div class="ed-card">
           <div class="ed-blocs-header">
-            <h3 class="ed-section-title">📦 Blocs de contenu</h3>
+            <h3 class="ed-section-title">📦 Contenu de la leçon</h3>
+            <div class="ed-md-hint">
+              <strong>Markdown supporté :</strong>
+              <code>## Titre</code> <code>**gras**</code> <code>*italique*</code>
+              <code>- liste</code> <code>| tableau |</code> <code>> citation</code>
+            </div>
             <div class="ed-add-bloc-btns">
-              <button id="ed-add-texte"    class="lc-btn secondary">📝 Texte</button>
-              <button id="ed-add-image"    class="lc-btn secondary">🖼️ Image</button>
-              <button id="ed-add-exercice" class="lc-btn secondary">✏️ Exercice</button>
+              <button id="ed-add-texte"    class="ed-add-bloc-btn">📝 Ajouter texte</button>
+              <button id="ed-add-image"    class="ed-add-bloc-btn">🖼️ Ajouter image</button>
+              <button id="ed-add-exercice" class="ed-add-bloc-btn">✏️ Ajouter exercice</button>
             </div>
           </div>
           <div id="ed-blocs" class="ed-blocs"></div>
-          <p id="ed-blocs-empty" class="ed-blocs-empty">
-            Aucun bloc. Utilise les boutons ci-dessus pour ajouter du contenu.
-          </p>
+          <p id="ed-blocs-empty" class="ed-blocs-empty">Aucun bloc. Utilise les boutons ci-dessus !</p>
         </div>
-
       </div>
     </section>
 
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="../js/config.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/progress.js"></script>
