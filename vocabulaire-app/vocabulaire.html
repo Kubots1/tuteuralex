@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vocabulaire – Apprendre le Français</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="vocabulaire.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="../index.html">🏠 Accueil</a></li>
+      <li><a href="../lecons-app/lecons.html">📖 Leçons</a></li>
+      <li><a href="../quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="../images-app/images.html">🖼️ Images</a></li>
+      <li><a href="vocabulaire.html" class="active">🃏 Vocabulaire</a></li>
+      <li><a href="../ressources.html">🎬 Ressources</a></li>
+      <li><a href="../contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <main id="vocab-app">
+
+    <!-- ══════════ ÉCRAN SÉLECTION ══════════ -->
+    <section id="screen-select">
+      <div class="vocab-header">
+        <h1 class="vocab-title">🃏 Vocabulaire</h1>
+        <p class="vocab-sub">Révise le vocabulaire français à ton rythme !</p>
+        <div id="vocab-admin-bar" class="vocab-admin-bar hidden">
+          <button id="vocab-add-btn"    class="vocab-admin-btn">➕ Ajouter un mot</button>
+          <button id="vocab-import-btn" class="vocab-admin-btn import">📥 Importer JSON</button>
+          <input type="file" id="vocab-import-input" accept=".json" hidden />
+        </div>
+      </div>
+
+      <!-- Formulaire ajout rapide -->
+      <div id="vocab-form" class="vocab-form hidden">
+        <div class="vocab-form-inner">
+          <h3 class="vocab-form-title">✏️ Nouveau mot</h3>
+          <div class="vocab-form-grid">
+            <label class="vocab-label">Mot français
+              <input id="vf-mot" class="vocab-input" type="text" placeholder="ex : le parapluie" />
+            </label>
+            <label class="vocab-label">Traduction
+              <input id="vf-trad" class="vocab-input" type="text" placeholder="ex : umbrella" />
+            </label>
+            <label class="vocab-label">Niveau
+              <select id="vf-niveau" class="vocab-input">
+                <option value="A0">A0</option>
+                <option value="A1" selected>A1</option>
+                <option value="A2">A2</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+              </select>
+            </label>
+          </div>
+          <div class="vocab-form-actions">
+            <button id="vf-cancel" class="vocab-btn secondary">Annuler</button>
+            <button id="vf-save"   class="vocab-btn primary">✅ Ajouter</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtre niveau -->
+      <div class="vocab-filtre-wrap">
+        <span class="vocab-filtre-label">Niveau</span>
+        <div class="vocab-pills" id="filtre-niveau">
+          <button class="vocab-pill active" data-val="tous">🔀 Tous (mélangés)</button>
+          <button class="vocab-pill" data-val="A0">A0</button>
+          <button class="vocab-pill" data-val="A1">A1</button>
+          <button class="vocab-pill" data-val="A2">A2</button>
+          <button class="vocab-pill" data-val="B1">B1</button>
+          <button class="vocab-pill" data-val="B2">B2</button>
+        </div>
+      </div>
+
+      <div id="vocab-stats" class="vocab-stats"></div>
+
+      <div class="vocab-start-wrap">
+        <button id="vocab-start-btn" class="vocab-start-btn">🚀 Commencer la révision</button>
+      </div>
+
+      <!-- Liste admin (gestion des mots) -->
+      <div id="vocab-admin-list" class="vocab-admin-list hidden"></div>
+    </section>
+
+    <!-- ══════════ ÉCRAN RÉVISION ══════════ -->
+    <section id="screen-review" class="hidden">
+      <div class="review-topbar">
+        <button id="review-quit" class="vocab-btn secondary">✕ Quitter</button>
+        <div class="review-progress-wrap">
+          <div class="review-progress-track">
+            <div id="review-progress-bar" class="review-progress-fill"></div>
+          </div>
+          <span id="review-counter" class="review-counter"></span>
+        </div>
+        <div class="review-score">
+          <span id="review-score-good">✅ 0</span>
+          <span id="review-score-bad">❌ 0</span>
+        </div>
+      </div>
+
+      <div class="review-card-wrap">
+        <div class="review-card" id="review-card">
+          <div class="review-inner" id="review-inner">
+            <div class="review-front">
+              <span id="review-niveau-badge" class="review-niveau-badge"></span>
+              <div class="review-front-label">🇫🇷 Mot français</div>
+              <div id="review-mot" class="review-mot"></div>
+              <div class="review-hint">Clique pour voir la traduction</div>
+            </div>
+            <div class="review-back">
+              <div class="review-back-label">📖 Traduction</div>
+              <div id="review-trad" class="review-trad"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="review-actions" class="review-actions hidden">
+        <button id="review-bad"  class="review-action-btn bad">❌ Je ne savais pas</button>
+        <button id="review-good" class="review-action-btn good">✅ Je savais</button>
+      </div>
+      <p id="review-flip-hint" class="review-flip-hint">👆 Clique sur la carte pour révéler la traduction</p>
+    </section>
+
+    <!-- ══════════ ÉCRAN RÉSULTAT ══════════ -->
+    <section id="screen-result" class="hidden">
+      <div class="result-card">
+        <div id="result-emoji" class="result-emoji"></div>
+        <h2 id="result-title" class="result-title"></h2>
+        <div id="result-score" class="result-score"></div>
+        <p id="result-msg" class="result-msg"></p>
+        <div class="result-actions">
+          <button id="result-retry"  class="vocab-btn primary">🔄 Recommencer</button>
+          <button id="result-home"   class="vocab-btn secondary">🏠 Retour</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../main.js"></script>
+  <script src="vocabulaire.js"></script>
+</body>
+</html>
