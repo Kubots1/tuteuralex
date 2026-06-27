@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exercices – Apprendre le Français</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="exercices.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">
+      <span class="flag">🇫🇷</span>
+      <span class="logo-text">Apprendre<br><em>le français</em></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="../index.html">🏠 Accueil</a></li>
+      <li><a href="../lecons-app/lecons.html">📖 Leçons</a></li>
+      <li><a href="../quiz-app/quiz.html">❓ Quiz</a></li>
+      <li><a href="../images-app/images.html">🖼️ Images</a></li>
+      <li><a href="../vocabulaire-app/vocabulaire.html">🃏 Vocabulaire</a></li>
+      <li><a href="exercices.html" class="active">✏️ Exercices</a></li>
+      <li><a href="../ressources.html">🎬 Ressources</a></li>
+      <li><a href="../contact.html">✉️ Contact</a></li>
+      <li id="nav-auth"></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <main id="exercices-app">
+
+    <!-- ══════════ ÉCRAN 1 — CATÉGORIES ══════════ -->
+    <section id="screen-categories">
+      <div class="ex-header">
+        <h1 class="ex-main-title">✏️ Exercices</h1>
+        <p class="ex-main-sub">Choisis le type d'exercice que tu veux pratiquer.</p>
+        <div id="ex-admin-bar" class="ex-admin-bar hidden">
+          <button id="ex-new-btn"    class="ex-admin-btn">➕ Nouvel exercice</button>
+          <button id="ex-import-btn" class="ex-admin-btn import">📥 Importer JSON</button>
+          <input type="file" id="ex-import-input" accept=".json" hidden />
+        </div>
+      </div>
+
+      <div class="cat-grid">
+        <div class="cat-card cat-tcf" data-cat="tcf">
+          <div class="cat-icon">🎓</div>
+          <h2 class="cat-title">Examen TCF</h2>
+          <p class="cat-desc">Test de Connaissance du Français — sujets officiels de compréhension et expression.</p>
+          <div class="cat-badge">TCF</div>
+        </div>
+        <div class="cat-card cat-delf" data-cat="delf">
+          <div class="cat-icon">📜</div>
+          <h2 class="cat-title">Examen DELF / DALF</h2>
+          <p class="cat-desc">Diplôme d'Études en Langue Française — compréhension écrite, orale et expression.</p>
+          <div class="cat-badge">DELF · DALF</div>
+        </div>
+        <div class="cat-card cat-exercice" data-cat="exercice">
+          <div class="cat-icon">✏️</div>
+          <h2 class="cat-title">Exercices de français</h2>
+          <p class="cat-desc">Conjugaison, grammaire, connecteurs, pronoms — des exercices pratiques et variés.</p>
+          <div class="cat-badge">Grammaire · Conjugaison</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ ÉCRAN 2 — LISTE ══════════ -->
+    <section id="screen-liste" class="hidden">
+      <div class="ex-topbar">
+        <button id="back-to-cats" class="ex-btn secondary">← Catégories</button>
+        <h2 id="liste-title" class="ex-topbar-title"></h2>
+        <div class="ex-filtre-wrap">
+          <div class="ex-pills" id="filtre-niveau">
+            <button class="ex-pill active" data-val="tous">Tous</button>
+            <button class="ex-pill" data-val="A1">A1</button>
+            <button class="ex-pill" data-val="A2">A2</button>
+            <button class="ex-pill" data-val="B1">B1</button>
+            <button class="ex-pill" data-val="B2">B2</button>
+            <button class="ex-pill" data-val="C1">C1</button>
+            <button class="ex-pill" data-val="C2">C2</button>
+          </div>
+        </div>
+      </div>
+      <div id="exercices-grid" class="exercices-grid"></div>
+      <p id="exercices-empty" class="ex-empty hidden">Aucun exercice disponible pour cette catégorie.</p>
+    </section>
+
+    <!-- ══════════ ÉCRAN 3 — EXERCICE ══════════ -->
+    <section id="screen-exercice" class="hidden">
+      <div class="ex-topbar sticky">
+        <button id="back-to-liste" class="ex-btn secondary">← Retour</button>
+        <div class="ex-topbar-meta">
+          <span id="ex-niveau-badge" class="ex-niveau-badge"></span>
+          <span id="ex-cat-badge"    class="ex-cat-badge"></span>
+        </div>
+        <span id="ex-progress-label" class="ex-progress-label"></span>
+      </div>
+      <div class="ex-content">
+        <h2 id="ex-titre" class="ex-titre"></h2>
+        <p  id="ex-desc"  class="ex-desc"></p>
+        <div id="ex-blocs" class="ex-blocs"></div>
+        <div class="ex-end-card hidden" id="ex-end-card">
+          <div class="ex-end-emoji">🎉</div>
+          <div class="ex-end-title">Exercice terminé !</div>
+          <button id="ex-retry-btn" class="ex-btn primary">🔄 Recommencer</button>
+          <button id="ex-back-btn"  class="ex-btn secondary">← Retour à la liste</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ ÉCRAN 4 — ÉDITEUR ══════════ -->
+    <section id="screen-editor" class="hidden">
+      <div class="ex-topbar sticky">
+        <button id="ed-cancel" class="ex-btn secondary">← Retour</button>
+        <span class="ex-topbar-title">✏️ Éditeur d'exercice</span>
+        <div class="ed-topbar-actions">
+          <button id="ed-delete" class="ex-btn danger">🗑️ Supprimer</button>
+          <button id="ed-save"   class="ex-btn primary">💾 Sauvegarder</button>
+        </div>
+      </div>
+      <div class="ed-body">
+
+        <!-- Métadonnées -->
+        <div class="ed-card">
+          <h3 class="ed-section-title">📋 Informations</h3>
+          <div class="ed-meta-grid">
+            <label class="ed-label">Titre
+              <input id="ed-titre" class="ed-input" type="text" placeholder="ex : Compréhension écrite DELF A2" />
+            </label>
+            <label class="ed-label">Catégorie
+              <select id="ed-categorie" class="ed-input">
+                <option value="tcf">🎓 Examen TCF</option>
+                <option value="delf">📜 Examen DELF / DALF</option>
+                <option value="exercice">✏️ Exercice de français</option>
+              </select>
+            </label>
+            <label class="ed-label">Niveau
+              <select id="ed-niveau" class="ed-input">
+                <option value="A1">A1</option>
+                <option value="A2" selected>A2</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+              </select>
+            </label>
+            <label class="ed-label">Icône
+              <input id="ed-icone" class="ed-input" type="text" placeholder="✏️" maxlength="4" />
+            </label>
+          </div>
+          <label class="ed-label" style="margin-top:0.5rem">Description
+            <textarea id="ed-description" class="ed-input ed-textarea-sm" rows="2" placeholder="Résumé de l'exercice…"></textarea>
+          </label>
+          <label class="ed-publie-label">
+            <input id="ed-publie" type="checkbox" />
+            <span>Publier l'exercice (visible par les étudiants)</span>
+          </label>
+        </div>
+
+        <!-- Blocs -->
+        <div class="ed-card">
+          <div class="ed-blocs-header">
+            <h3 class="ed-section-title">📦 Contenu de l'exercice</h3>
+            <div class="ed-add-bloc-btns">
+              <button id="ed-add-texte"      class="ed-add-bloc-btn">📝 Texte</button>
+              <button id="ed-add-video"      class="ed-add-bloc-btn">▶️ Vidéo YouTube</button>
+              <button id="ed-add-question"   class="ed-add-bloc-btn">❓ Question ouverte</button>
+              <button id="ed-add-trous"      class="ed-add-bloc-btn">🔤 Texte à trous</button>
+              <button id="ed-add-qcm"        class="ed-add-bloc-btn">🔘 QCM</button>
+              <button id="ed-add-expression" class="ed-add-bloc-btn">📝 Expression écrite</button>
+            </div>
+          </div>
+          <div id="ed-blocs" class="ed-blocs"></div>
+          <p id="ed-blocs-empty" class="ed-blocs-empty">Aucun bloc. Utilise les boutons ci-dessus !</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../main.js"></script>
+  <script src="exercices.js"></script>
+</body>
+</html>
